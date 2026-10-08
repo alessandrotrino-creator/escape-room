@@ -2553,7 +2553,7 @@ ROOMS.angoli = (() => {
   /* goniometro: un raggio fisso a 0° e uno mobile a v° */
   const gonio = v => {
     const cx = 170, cy = 186, r = 150, P = (a, rr) => [cx + rr*Math.cos(R(a)), cy - rr*Math.sin(R(a))]; let g = `<path d="M${cx - r} ${cy}A${r} ${r} 0 0 1 ${cx + r} ${cy}z" fill="#FFF3E0" stroke="#8D6B48" stroke-width="3"/>`;
-    for(let a = 0; a <= 180; a += 10){ const p = P(a, r), q = P(a, r - (a % 30 ? 10 : 18)); g += `<path d="M${f1(p[0])} ${f1(p[1])}L${f1(q[0])} ${f1(q[1])}" stroke="#8D6B48" stroke-width="2"/>`; if(a % 30 === 0 && a % 180){ const t = P(a, r - 34); g += T(t[0], t[1] + 5, a, '#8D6B48', 14); } }
+    for(let a = 0; a <= 180; a += 5){ const p = P(a, r), q = P(a, r - (a % 30 ? (a % 10 ? 6 : 11) : 18)); g += `<path d="M${f1(p[0])} ${f1(p[1])}L${f1(q[0])} ${f1(q[1])}" stroke="#8D6B48" stroke-width="2"/>`; if(a % 30 === 0 && a % 180){ const t = P(a, r - 34); g += T(t[0], t[1] + 5, a, '#8D6B48', 14); } }
     g += T(cx + r - 22, cy - 10, 0, '#8D6B48', 14) + T(cx - r + 26, cy - 10, 180, '#8D6B48', 14);
     const p = P(v, 60), e = P(v, r - 6);
     g += `<path d="M${cx} ${cy}L${cx + 60} ${cy}A60 60 0 0 0 ${f1(p[0])} ${f1(p[1])}z" fill="#D84315" opacity=".3"/><path d="M${cx} ${cy}H${cx + r - 6}" stroke="#18223A" stroke-width="5" stroke-linecap="round"/><path d="M${cx} ${cy}L${f1(e[0])} ${f1(e[1])}" stroke="#D84315" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="#18223A"/>`;
@@ -2572,17 +2572,17 @@ ROOMS.angoli = (() => {
       if(l === 1){
         /* 1. lucchetto: complementare o supplementare */
         if(Math.random() < 0.5){ const a = rnd(10, 80), r = 90 - a;
-          E.push({type:'lock', title:'La cassaforte ad angolo retto', q:`I due angoli insieme formano un angolo retto. Uno misura ${a}°: quanto misura il suo <b>complementare</b>?`, fig:rays([0, a, 90], [`${a}°`, '?']), ans:r, unit:'°',
+          E.push({type:'lock', title:'La cassaforte ad angolo retto', q:`Un angolo misura ${a}°: quanto misura il suo <b>complementare</b>?`, fig:rays([0, a], [`${a}°`]), ans:r, unit:'°',
             hint:['Due angoli complementari, insieme, formano un angolo retto.', `Un angolo retto misura 90°: calcolate 90° − ${a}°.`, `90° − ${a}° = ${r}°.`], sol:`90° − ${a}° = ${r}°`}); }
         else { const a = rnd(15, 165), r = 180 - a;
-          E.push({type:'lock', title:'La cassaforte piatta', q:`I due angoli insieme formano un angolo piatto. Uno misura ${a}°: quanto misura il suo <b>supplementare</b>?`, fig:rays([0, a, 180], [`${a}°`, '?']), ans:r, unit:'°',
+          E.push({type:'lock', title:'La cassaforte piatta', q:`Un angolo misura ${a}°: quanto misura il suo <b>supplementare</b>?`, fig:rays([0, a], [`${a}°`]), ans:r, unit:'°',
             hint:['Due angoli supplementari, insieme, formano un angolo piatto.', `Un angolo piatto misura 180°: calcolate 180° − ${a}°.`, `180° − ${a}° = ${r}°.`], sol:`180° − ${a}° = ${r}°`}); }
         /* 2. goniometro oppure schedario dei tipi di angolo */
         if(Math.random() < 0.5){ const v = rnd(0, 2); let X, q, h1, h2;
           if(v === 0){ X = 5*rnd(3, 35); q = `Aprite l’angolo del goniometro fino a <b>${X}°</b>.`; h1 = 'Il raggio nero resta fermo sullo 0: muovete quello arancione.'; h2 = `Leggete i numeri sul bordo: ${X}° è ${X < 90 ? 'prima' : X > 90 ? 'dopo' : 'proprio a'} metà (90°).`; }
           else if(v === 1){ const a = 5*rnd(2, 16); X = 90 - a; q = `Costruite con il goniometro il <b>complementare</b> di un angolo di ${a}°.`; h1 = 'Due angoli complementari insieme fanno 90°.'; h2 = `90° − ${a}° = ${X}°.`; }
           else { const a = 5*rnd(3, 33); X = 180 - a; q = `Costruite con il goniometro il <b>supplementare</b> di un angolo di ${a}°.`; h1 = 'Due angoli supplementari insieme fanno 180°.'; h2 = `180° − ${a}° = ${X}°.`; }
-          E.push({type:'dial', title:'L’esperimento del goniometro', q, min:0, max:180, step:5, start:0, ans:X, fmt:x => `${x}°`, draw:gonio, wrong:x => `L’angolo misura ${x}°: ${x < X ? 'apritelo di più' : 'chiudetelo un po’'}.`,
+          E.push({type:'dial', title:'L’esperimento del goniometro', q, min:0, max:180, step:5, start:0, ans:X, fmt:() => '? °', draw:gonio, wrong:x => `Non è l’angolo giusto: ${x < X ? 'apritelo di più' : 'chiudetelo un po’'}.`,
             hint:[h1, h2, `Fermate il goniometro su ${X}°.`], sol:`un angolo di ${X}°`}); }
         else { const ty = shuffle([['acuto', 5*rnd(2, 17)], ['retto', 90], ['ottuso', 5*rnd(19, 35)], ['piatto', 180], ['giro', 360]]).slice(0, 4).sort((x, y) => x[1] - y[1]);
           E.push({type:'match', title:'Lo schedario degli angoli', q:'Abbinate ogni misura al nome dell’angolo.', pairs:ty.map(([t, m]) => [`${m}°`, `angolo ${t}`]),
@@ -2652,7 +2652,7 @@ ROOMS.angoli = (() => {
             hint:['La somma degli angoli esterni di un poligono convesso è sempre 360°.', `Gli angoli esterni sono ${n}, tutti uguali.`, `360° : ${n} = ${e}°.`], sol:`360° : ${n} = ${e}°`}); }
         /* 2. goniometro sull'angolo interno oppure schedario delle somme */
         if(Math.random() < 0.5){ const n = pick([3, 4, 5, 6, 8, 9, 10, 12]), X = 180 - 360/n;
-          E.push({type:'dial', title:'L’esperimento del goniometro', q:`Regolate il goniometro sulla misura di <b>ogni angolo interno</b> di un ${NOME[n]} regolare.${poly(n, '', true)}`, min:0, max:180, step:1, start:0, ans:X, fmt:x => `${x}°`, draw:gonio, wrong:x => `${x}° non è l’angolo interno del ${NOME[n]} regolare.`,
+          E.push({type:'dial', title:'L’esperimento del goniometro', q:`Regolate il goniometro sulla misura di <b>ogni angolo interno</b> di un ${NOME[n]} regolare.${poly(n, '', true)}`, min:0, max:180, step:1, start:0, ans:X, tol:2.5, fmt:() => '? °', draw:gonio, wrong:x => `Non è l’angolo interno del ${NOME[n]} regolare: ${x < X ? 'apritelo di più' : 'chiudetelo un po’'}.`,
             hint:[`La somma degli angoli interni è (${n} − 2) · 180° = ${N((n - 2)*180)}°.`, `Dividete per ${n}, il numero degli angoli.`, `${N((n - 2)*180)}° : ${n} = ${X}°.`], sol:`${NOME[n]} regolare: ${X}°`}); }
         else { const ns = shuffle([3, 4, 5, 6, 7, 8, 10]).slice(0, 4).sort((a, b) => a - b);
           E.push({type:'match', title:'Lo schedario dei poligoni', q:'Abbinate ogni poligono alla somma dei suoi angoli interni.', pairs:ns.map(n => [`${NOME[n]} (${n} lati)`, `${N((n - 2)*180)}°`]),
@@ -4065,6 +4065,847 @@ ROOMS.universo.more = function(l){
   E.push({slot:3, type:'rhythm', title:'Il faro della pulsar', q:'Una pulsar è una stella di neutroni che ruota velocissima e manda lampi regolari, come un faro. Toccate a ogni lampo per registrarli!', theme:'ingranaggio', bpm, need, two:l === 3, hint:['Toccate quando l’anello si chiude sul bersaglio.', 'Le pulsar sono ciò che resta di stelle molto grandi esplose come supernove.', `Servono ${need} lampi a tempo${l === 3 ? ', alternando sinistra e destra' : ''}.`], sol:`${need} lampi registrati a tempo`});
   return E;
 };
+/* ---------- m12\more.js ---------- */
+/* ---------- enigmi in più (more) per le stanze di matematica 1ª e 2ª ---------- */
+ROOMS.frazioni.more = (() => {
+  const lcm = (a, b) => a/gcd(a, b)*b;
+  const pie = (n, d) => { let g = ''; const P = a => [50 + 42*Math.cos(a*Math.PI/180), 50 + 42*Math.sin(a*Math.PI/180)];
+    for(let i = 0; i < d; i++){ const p = P(-90 + 360*i/d), q = P(-90 + 360*(i + 1)/d); g += `<path d="M50 50L${p[0].toFixed(1)} ${p[1].toFixed(1)}A42 42 0 0 1 ${q[0].toFixed(1)} ${q[1].toFixed(1)}z" fill="${i < n ? '#F2994A' : '#FFF6E8'}" stroke="#8A5A2B" stroke-width="2.5"/>`; }
+    return `<svg viewBox="0 0 100 100" width="62" height="62" data-f="${n}-${d}">${g}</svg>`; };
+  return function(l){
+    const E = [];
+    /* slot 1: operazioni */
+    if(l === 1){ const d = rnd(5, 12), a = rnd(1, d - 2), b = rnd(1, d - 1 - a), sub = Math.random() < 0.5 && a !== b, x = Math.max(a, b), y = Math.min(a, b), r = sub ? x - y : a + b;
+      E.push({slot:1, type:'lock', title:'Il lucchetto delle operazioni', q:`Trovate il numeratore che manca: ${sub ? `${frac(x, d)} − ${frac(y, d)}` : `${frac(a, d)} + ${frac(b, d)}`} = ${frac('?', d)}`, ans:r,
+        hint:['Le frazioni hanno lo stesso denominatore: il denominatore resta uguale.', `Si ${sub ? 'sottraggono' : 'sommano'} solo i numeratori.`, `${sub ? `${x} − ${y}` : `${a} + ${b}`} = ${r}: il risultato è ${frac(r, d)}.`], sol:`${frac(r, d)}`}); }
+    else if(l === 2){ const [b, d] = pick([[2, 3], [3, 4], [4, 6], [2, 5], [3, 5], [4, 5], [6, 8], [2, 7], [3, 8], [4, 10]]), L = lcm(b, d), a = rnd(1, b - 1), c = rnd(1, d - 1), r = a*L/b + c*L/d;
+      E.push({slot:1, type:'lock', title:'Il lucchetto delle operazioni', q:`Trovate il numeratore che manca: ${frac(a, b)} + ${frac(c, d)} = ${frac('?', L)}`, ans:r,
+        hint:[`Prima trasformate le frazioni in frazioni con denominatore ${L} (il minimo comune multiplo di ${b} e ${d}).`, `${frac(a, b)} = ${frac(a*L/b, L)} e ${frac(c, d)} = ${frac(c*L/d, L)}.`, `${a*L/b} + ${c*L/d} = ${r}: il risultato è ${frac(r, L)}.`], sol:`${frac(a*L/b, L)} + ${frac(c*L/d, L)} = ${frac(r, L)}`}); }
+    else { const a = rnd(1, 7), b = rnd(a + 1, 9), c = rnd(1, 7), d = rnd(c + 1, 9), div = Math.random() < 0.5, n = a*(div ? d : c), m = b*(div ? c : d), g = gcd(n, m);
+      E.push({slot:1, type:'lock', title:'Il lucchetto delle operazioni', q:`Calcolate ${frac(a, b)} ${div ? ':' : '·'} ${frac(c, d)} e riducete ai minimi termini. Il risultato è ${frac('?', m/g)}: qual è il numeratore?`, ans:n/g,
+        hint:[div ? 'Per dividere due frazioni si moltiplica la prima per l’inversa della seconda.' : 'Per moltiplicare due frazioni si moltiplicano i numeratori tra loro e i denominatori tra loro.', `${div ? `${frac(a, b)} · ${frac(d, c)}` : `${frac(a, b)} · ${frac(c, d)}`} = ${frac(n, m)}.`, `${frac(n, m)} semplificata (dividendo per ${g}) è ${frac(n/g, m/g)}.`], sol:`${frac(n/g, m/g)}`}); }
+    if(l === 1){ const [n, d] = pick([[1, 2], [1, 3], [2, 3], [1, 4], [3, 4], [2, 5], [3, 5], [4, 5], [5, 6], [3, 7], [5, 8], [7, 9]]), k = rnd(2, 6);
+      E.push({slot:1, type:'choice', title:'Le provette della semplificazione', q:`Quale provetta contiene ${frac(n*k, d*k)} ridotta ai minimi termini?`, opts:opts4(frac(n, d), [frac(d, n), frac(n + 1, d), frac(n, d + 1)], [frac(n*k, d), frac(n*k - 1, d*k - 1)]),
+        hint:['Si dividono numeratore e denominatore per lo stesso numero.', `${n*k} e ${d*k} si possono dividere tutti e due per ${k}.`, `${n*k} : ${k} = ${n}, ${d*k} : ${k} = ${d}: ${frac(n, d)}.`], sol:`${frac(n*k, d*k)} = ${frac(n, d)}`}); }
+    else if(l === 2){ const d = rnd(3, 9); let r; do { r = rnd(1, d - 1); } while(gcd(r, d) !== 1); const q = rnd(1, 4), n = q*d + r, mx = (a, b, c) => `${a} e ${frac(b, c)}`;
+      E.push({slot:1, type:'choice', title:'Le provette della semplificazione', q:`La frazione impropria ${frac(n, d)} è uguale a quale numero misto?`, opts:opts4(mx(q, r, d), [mx(q + 1, r, d), mx(q, d - r, d), mx(r, q, d)], [mx(q - 1 || q + 2, r + 1 < d ? r + 1 : 1, d), String(n - d)]),
+        hint:[`Quante volte ${d} sta in ${n}? Quello è l’intero.`, `${n} : ${d} = ${q} con resto ${r}.`, `${frac(n, d)} = ${q} e ${frac(r, d)}.`], sol:`${frac(n, d)} = ${q} e ${frac(r, d)}`}); }
+    else { const [n, d] = pick([[1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 20], [7, 20], [3, 25], [9, 50], [3, 10], [7, 10], [1, 2]]), p = 100*n/d;
+      E.push({slot:1, type:'choice', title:'Le provette della semplificazione', q:`A quale percentuale corrisponde la frazione ${frac(n, d)}?`, opts:opts4(`${p}%`, [`${n*10}%`, `${Math.round(p/10)}%`, `${n}${d}%`, `${p + 5}%`], [`${p*10}%`, `${p + 50}%`]),
+        hint:['Una percentuale è una frazione con denominatore 100.', `Moltiplicate numeratore e denominatore per ${100/d}: ${frac(n, d)} = ${frac(p, 100)}.`, `${frac(p, 100)} = ${p}%.`], sol:`${frac(n, d)} = ${frac(p, 100)} = ${p}%`}); }
+    /* slot 2: torte e lente */
+    { const seen = new Set(), sel = [], dmax = l === 1 ? 6 : 8;
+      while(sel.length < (l === 1 ? 4 : 5)){ const d = rnd(2, dmax), n = rnd(1, d - 1), v = n/d; if(![...seen].some(x => Math.abs(x - v) < 1e-9)){ seen.add(v); sel.push([n, d]); } }
+      const right = ([n, d]) => { if(l < 3) return frac(n, d); const g = gcd(n, d); return frac(n/g, d/g); };
+      E.push({slot:2, type:'match', title:'Lo schedario delle torte', q:l < 3 ? 'Abbinate ogni torta alla frazione colorata.' : 'Abbinate ogni torta alla frazione colorata, <b>ridotta ai minimi termini</b>.', pairs:sel.map(p => [pie(p[0], p[1]), right(p)]),
+        hint:['Contate le fette in tutto (denominatore) e quelle colorate (numeratore).', l < 3 ? `Per esempio la torta con ${sel[0][1]} fette e ${sel[0][0]} colorate è ${frac(sel[0][0], sel[0][1])}.` : 'Poi semplificate: per esempio 2 fette colorate su 4 sono 1/2.', sel.map(p => `${p[0]} su ${p[1]} = ${right(p)}`).join('; ') + '.'], sol:sel.map(p => right(p)).join(', ')}); }
+    { const seen = new Set(), items = [], add = (n, d, ok, k) => { const h = frac(n, d); if(seen.has(h)) return; seen.add(h); items.push(Object.assign({h, n, d, k}, ok ? {ok:true} : {})); };
+      let q, h1, h2, why; const nOk = rnd(3, 4);
+      if(l === 1){ q = 'Tocca tutte le frazioni <b>proprie</b> (minori di 1).'; h1 = 'Una frazione propria ha il numeratore minore del denominatore.'; h2 = 'Le frazioni con numeratore maggiore o uguale al denominatore valgono 1 o più.';
+        while(items.filter(x => x.ok).length < nOk){ const d = rnd(3, 12); add(rnd(1, d - 1), d, true); }
+        while(items.length < 8){ const d = rnd(2, 9), n = Math.random() < 0.3 ? d*rnd(1, 3) : rnd(d + 1, 3*d); add(n, d, false); }
+        why = it => it.n === it.d ? `No: ${it.n}/${it.d} vale esattamente 1.` : `No: ${it.n} è maggiore di ${it.d}, è una frazione impropria.`; }
+      else if(l === 2){ q = 'Tocca tutte le frazioni <b>apparenti</b> (che equivalgono a un numero intero).'; h1 = 'Una frazione è apparente se il numeratore è un multiplo del denominatore.'; h2 = 'Per esempio 12/4 = 3 è apparente; 10/4 no.';
+        while(items.filter(x => x.ok).length < nOk){ const d = rnd(2, 9); add(d*rnd(1, 5), d, true); }
+        while(items.length < 8){ const d = rnd(2, 9), n = d*rnd(1, 5) + rnd(1, d - 1); add(n, d, false); }
+        why = it => `No: ${it.n} : ${it.d} non dà un numero intero (resto ${it.n % it.d}).`; }
+      else { q = `Tocca tutte le frazioni <b>maggiori di ${frac(1, 2)} e minori di 1</b>.`; h1 = 'Maggiore di un mezzo: il numeratore è più della metà del denominatore.'; h2 = 'Minore di 1: il numeratore è minore del denominatore.';
+        while(items.filter(x => x.ok).length < nOk){ const d = rnd(3, 12), n = rnd(Math.floor(d/2) + 1, d - 1); if(2*n > d && n < d) add(n, d, true); }
+        while(items.length < 8){ const d = rnd(3, 12), n = Math.random() < 0.5 ? rnd(1, Math.floor(d/2)) : rnd(d, 2*d); add(n, d, false); }
+        why = it => it.n >= it.d ? `No: ${it.n}/${it.d} vale 1 o più.` : `No: ${it.n}/${it.d} non supera un mezzo.`; }
+      const okh = items.filter(x => x.ok).map(x => x.h);
+      E.push({slot:2, type:'find', title:'La lente sulle frazioni speciali', q, items, why, hint:[h1, h2, `Quelle giuste: ${okh.join(', ')}.`], sol:okh.join(', ')}); }
+    /* slot 3: percorso e biglietti */
+    { const steps = l + 2; let a, b; do { b = rnd(2, 9); a = rnd(1, b - 1); } while(gcd(a, b) !== 1);
+      const fs = Array.from({length:steps}, () => pick([2, 2, 3, 3, 5])), K = fs.reduce((x, y) => x*y, 1); let n = a*K, d = b*K;
+      const start = `${n}/${d}`, st = [], notes = [];
+      fs.forEach((p, i) => { n /= p; d /= p; if(i < steps - 1){ st.push(`${n}/${d}`); notes.push(`numeratore e denominatore divisi per ${p}`); } });
+      E.push({slot:3, type:'path', title:'Il percorso della semplificazione', q:`Accompagnate la goccia di succo lungo la semplificazione di ${frac(a*K, b*K)}: a ogni tappa si divide per un numero primo.`, sprite:'goccia', what:'la goccia', start, stations:st, end:`${a}/${b} ridotta!`, notes,
+        hint:['Muovete il dito piano, restando al centro della strada.', 'Se la goccia esce, riparte dall’ultima tappa: potete darvi il cambio.', `${frac(a*K, b*K)} si semplifica dividendo per ${K}: diventa ${frac(a, b)}.`], sol:`${frac(a*K, b*K)} = ${frac(a, b)}`}); }
+    if(l === 1){ let a, b, N0; do { [a, b] = shuffle([2, 3, 4, 5, 6]).slice(0, 2); N0 = lcm(a, b)*rnd(1, 4); } while(N0 - N0/a - N0/b <= 0 || N0 < 12);
+      const r = N0 - N0/a - N0/b;
+      E.push({slot:3, type:'roles', title:'I biglietti del sacchetto', q:'Il sacchetto delle biglie del professore è descritto da quattro biglietti.', clues:[`Nel sacchetto ci sono ${N0} biglie.`, `${frac(1, a)} delle biglie è rosso.`, `${frac(1, b)} delle biglie è blu.`, 'Tutte le altre sono verdi: il codice è il numero delle biglie verdi.'], ans:r,
+        hint:['Calcolate quante sono le rosse e quante le blu.', `Rosse: ${N0} : ${a} = ${N0/a}; blu: ${N0} : ${b} = ${N0/b}.`, `Verdi: ${N0} − ${N0/a} − ${N0/b} = ${r}.`], sol:`${N0} − ${N0/a} − ${N0/b} = ${r}`}); }
+    else if(l === 2){ const d1 = pick([3, 4, 5]), n1 = rnd(1, d1 - 1), d2 = pick([2, 3, 4]), M = d1*d2*rnd(2, 6), s1 = M*n1/d1, rest = M - s1, s2 = rest/d2, r = rest - s2;
+      E.push({slot:3, type:'roles', title:'I biglietti del sacchetto', q:'Nel sacchetto del professore c’erano dei soldi: leggete i quattro biglietti.', clues:[`Nel sacchetto c’erano ${M} €.`, `Il professore ha speso i ${frac(n1, d1)} per un microscopio.`, `Poi ha speso ${frac(1, d2)} dei soldi <b>rimasti</b> per dei vetrini.`, 'Il codice è quanti euro sono ancora nel sacchetto.'], ans:r, unit:'€',
+        hint:[`Prima spesa: ${frac(n1, d1)} di ${M} = ${s1} €; restano ${rest} €.`, `Seconda spesa: ${frac(1, d2)} di ${rest} = ${s2} €.`, `${rest} − ${s2} = ${r} €.`], sol:`${M} − ${s1} − ${s2} = ${r} €`}); }
+    else { const d = pick([3, 4, 5, 6, 8]), n = rnd(1, d - 1), k = rnd(3, 12), R = (d - n)*k, T = d*k;
+      E.push({slot:3, type:'roles', title:'I biglietti del sacchetto', q:'Il professore aveva dei soldi in un sacchetto: leggete i quattro biglietti.', clues:['Il professore aveva nel sacchetto una certa somma.', `Ha speso i ${frac(n, d)} della somma per un telescopio.`, `Nel sacchetto sono rimasti ${R} €.`, 'Il codice è la somma iniziale, in euro.'], ans:T, unit:'€',
+        hint:[`Se ha speso i ${frac(n, d)}, gli sono rimasti i ${frac(d - n, d)}.`, `${frac(d - n, d)} della somma = ${R} €, quindi ${frac(1, d)} = ${R} : ${d - n} = ${k} €.`, `La somma intera: ${k} · ${d} = ${T} €.`], sol:`${R} : ${d - n} · ${d} = ${T} €`}); }
+    return E;
+  };
+})();
+
+ROOMS.potenze.more = (() => {
+  const pw = (b, e) => `${b}<sup>${e}</sup>`;
+  return function(l){
+    const E = [];
+    /* slot 1 */
+    if(l === 1){ const n = rnd(3, 8), r = 2**n;
+      E.push({slot:1, type:'lock', title:'La cassaforte dei batteri', q:`In una provetta c’è 1 batterio. Ogni ora ciascun batterio si divide in due. Quanti batteri ci sono dopo <b>${n} ore</b>?`, ans:r,
+        hint:['A ogni ora il numero dei batteri raddoppia: si moltiplica per 2.', `Dopo ${n} ore: 2 · 2 · … (${n} volte) = ${pw(2, n)}.`, `${pw(2, n)} = ${r}.`], sol:`${pw(2, n)} = ${r}`}); }
+    else if(l === 2){ const k = rnd(2, 5), n = rnd(2, 4), r = k*3**n;
+      E.push({slot:1, type:'lock', title:'La cassaforte dei batteri', q:`In una provetta ci sono ${k} batteri. Ogni ora il loro numero <b>triplica</b>. Quanti sono dopo ${n} ore?`, ans:r,
+        hint:['Triplicare vuol dire moltiplicare per 3, una volta per ogni ora.', `Dopo ${n} ore: ${k} · ${pw(3, n)}.`, `${pw(3, n)} = ${3**n}; ${k} · ${3**n} = ${r}.`], sol:`${k} · ${pw(3, n)} = ${r}`}); }
+    else { const e0 = pick([3, 4]), cs = Array.from({length:e0 + 1}, (_, i) => i === 0 ? rnd(1, 9) : (Math.random() < 0.3 ? 0 : rnd(1, 9)));
+      const terms = cs.map((c, i) => [c, e0 - i]).filter(t => t[0]), r = terms.reduce((s, [c, e]) => s + c*10**e, 0), ex = terms.map(([c, e]) => e === 0 ? `${c}` : `${c} · ${pw(10, e)}`).join(' + ');
+      E.push({slot:1, type:'lock', title:'La cassaforte dei batteri', q:`La forma polinomiale del codice è <b>${ex}</b>. Qual è il codice?`, ans:r,
+        hint:['Ogni potenza di 10 indica il posto della cifra: ' + `${pw(10, 3)} = migliaia, ${pw(10, 2)} = centinaia, ${pw(10, 1)} = decine.`, 'Dove un ordine manca, la cifra è 0.', `Il numero è ${N(r)}.`], sol:`${ex} = ${N(r)}`}); }
+    if(l === 1){ const n = rnd(2, 6), r = 10**n;
+      E.push({slot:1, type:'choice', title:'Le provette delle proprietà', q:`Quale provetta contiene il valore di ${pw(10, n)}?`, opts:nopts(r, [10**(n + 1), 10*n], 10**(n - 1)),
+        hint:[`${pw(10, n)} è 10 moltiplicato per sé stesso ${n} volte.`, `Una potenza di 10 è un 1 seguito da tanti zeri quanto dice l’esponente: ${n} zeri.`, `${pw(10, n)} = ${N(r)}.`], sol:`${pw(10, n)} = ${N(r)}`}); }
+    else if(l === 2){ let a, b; do { a = rnd(2, 5); b = rnd(2, 6); } while(a === b); const m = rnd(2, 4), quo = Math.random() < 0.5, A = quo ? a*b : a, op = quo ? ':' : '·';
+      const ex = `${pw(A, m)} ${op} ${pw(quo ? a : b, m)}`, right = quo ? `${pw(b, m)}` : `(${a} · ${b})<sup>${m}</sup>`;
+      E.push({slot:1, type:'choice', title:'Le provette delle proprietà', q:`A che cosa è uguale ${ex}?`, opts:opts4(right, quo ? [pw(b, 0), pw(b, 2*m), `${pw(A - a, m)}`] : [`(${a} · ${b})<sup>${2*m}</sup>`, `(${a} + ${b})<sup>${m}</sup>`, `${a*b}<sup>${m*m}</sup>`], quo ? `${A - a}` : `${a + b}`),
+        hint:['Quando gli esponenti sono uguali e le basi diverse, si opera sulle basi e si lascia l’esponente.', quo ? `${A} : ${a} = ${b}, e l’esponente resta ${m}.` : `${a} · ${b}, e l’esponente resta ${m}.`, `${ex} = ${right}.`], sol:`${ex} = ${right}`}); }
+    else { let n; do { n = rnd(20, 300); } while(Number.isInteger(Math.sqrt(n))); const k = Math.floor(Math.sqrt(n)), t = (x, y) => `tra ${x} e ${y}`;
+      E.push({slot:1, type:'choice', title:'Le provette delle proprietà', q:`√${n} non è un numero intero. Tra quali numeri interi consecutivi è compreso?`, opts:opts4(t(k, k + 1), [t(k - 1, k), t(k + 1, k + 2)], t(Math.floor(n/2), Math.floor(n/2) + 1)),
+        hint:['Cercate i due quadrati perfetti più vicini a ' + n + ', uno sotto e uno sopra.', `${pw(k, 2)} = ${k*k} e ${pw(k + 1, 2)} = ${(k + 1)**2}.`, `${k*k} < ${n} < ${(k + 1)**2}, quindi √${n} è tra ${k} e ${k + 1}.`], sol:`${k} < √${n} < ${k + 1}`}); }
+    /* slot 2 */
+    { const b = l === 1 ? 2 : l === 2 ? pick([3, 5]) : 10, e = l === 1 ? rnd(3, 10) : l === 2 ? (b === 3 ? rnd(2, 6) : rnd(2, 5)) : rnd(-4, 8), mn = l === 3 ? -6 : 0, mx = l === 3 ? 9 : l === 1 ? 10 : 8;
+      const val = b**e, vs = l === 3 && e < 0 ? N(val) : N(val);
+      const draw = v => { const k = Math.max(0, Math.min(10, Math.abs(v))); let g = ''; for(let i = 0; i < k; i++) g += `<rect x="${110 + (v < 0 ? 0 : 0)}" y="${180 - (i + 1)*15}" width="80" height="13" rx="3" fill="${v < 0 ? '#9FD4F5' : '#C9B6F2'}" stroke="#5B35B5" stroke-width="2"/>`;
+        return `<svg viewBox="0 0 300 200"><text x="40" y="110" font-size="44" font-weight="800" fill="#5B35B5">${b}<tspan dy="-20" font-size="26">${String(v).replace('-', '−')}</tspan></text>${g}</svg>`; };
+      E.push({slot:2, type:'dial', title:'La manopola dell’esponente', q:`Girate la manopola sull’esponente giusto: ${b}<sup>?</sup> = <b>${vs}</b>`, min:mn, max:mx, step:1, start:mn, ans:e, fmt:v => `esponente ${String(v).replace('-', '−')}`, draw,
+        wrong:v => `${b} elevato a ${String(v).replace('-', '−')} non fa ${vs}.`,
+        hint:[l === 3 ? 'Con le potenze di 10 l’esponente conta gli zeri (o, se è negativo, i posti dopo la virgola).' : `Moltiplicate ${b} per sé stesso finché arrivate a ${vs}.`, l === 3 ? (e < 0 ? 'Il numero è minore di 1: l’esponente è negativo.' : 'Contate gli zeri del numero.') : `${b}, ${b*b}, ${b**3}… contate i passi.`, `${pw(b, String(e).replace('-', '−'))} = ${vs}: l’esponente è ${String(e).replace('-', '−')}.`], sol:`${pw(b, String(e).replace('-', '−'))} = ${vs}`}); }
+    { let items, q, h1, h2, why; const sel = (ok, no, nOk) => shuffle(ok).slice(0, nOk).map(x => ({h:x[0], w:x[1], ok:true})).concat(shuffle(no).slice(0, 8 - nOk).map(x => ({h:x[0], w:x[1]})));
+      if(l === 1){ const C = [8, 27, 64, 125, 216, 343, 512, 729, 1000].map(v => [N(v), '']), NC = [9, 16, 25, 36, 49, 81, 100, 12, 24, 30, 50, 200, 90].map(v => [N(v), Number.isInteger(Math.sqrt(v)) ? `No: ${v} è un quadrato perfetto (${Math.sqrt(v)} · ${Math.sqrt(v)}), non un cubo.` : `No: ${v} non è il cubo di nessun numero naturale.`]);
+        items = sel(C, NC, rnd(3, 4)); q = 'Tocca tutti i <b>cubi perfetti</b> (il cubo di un numero naturale).'; h1 = 'Un cubo perfetto è n · n · n: 1, 8, 27, 64…'; h2 = 'Attenzione ai quadrati perfetti come 16 o 36: non sono cubi!'; }
+      else if(l === 2){ const a = rnd(2, 9), m = rnd(2, 6), n = rnd(2, 9);
+        const OK = [[pw(a, 0), ''], [pw(1, n), ''], [`${pw(a, m)} : ${pw(a, m)}`, ''], [pw(a + 1, 0), ''], [`(${pw(a, 0)})<sup>${m}</sup>`, '']];
+        const NO = [[pw(a, 1), `No: ${pw(a, 1)} = ${a}.`], [pw(0, n), `No: 0 elevato a ${n} fa 0.`], [`${pw(a, m)} : ${pw(a, m - 1)}`, `No: ${pw(a, m)} : ${pw(a, m - 1)} = ${pw(a, 1)} = ${a}.`], [`${a} · 0`, `No: ${a} · 0 = 0.`], [pw(1 + a, 1), `No: vale ${a + 1}.`], [`${pw(a, m)} · ${pw(a, 0)}`, `No: vale ${pw(a, m)}.`]];
+        items = sel(OK, NO, rnd(3, 4)); q = 'Tocca tutte le espressioni che valgono esattamente <b>1</b>.'; h1 = 'Ogni numero diverso da 0 elevato a 0 fa 1; 1 elevato a qualsiasi numero fa 1.'; h2 = 'Il quoziente di due potenze uguali fa 1 (gli esponenti si sottraggono e danno 0).'; }
+      else { const OK = [[`(${pw(2, 3)})<sup>4</sup>`, ''], [`${pw(2, 5)} · ${pw(2, 7)}`, ''], [pw(4, 6), ''], [pw(8, 4), ''], [`${pw(2, 15)} : ${pw(2, 3)}`, ''], [pw(16, 3), ''], [pw(64, 2), '']];
+        const NO = [[`${pw(2, 3)} · ${pw(2, 4)}`, 'No: vale 2 elevato a 7.'], [`(${pw(2, 6)})<sup>6</sup>`, 'No: vale 2 elevato a 36.'], [pw(4, 3), 'No: 4 elevato a 3 = 2 elevato a 6.'], [pw(8, 3), 'No: 8 elevato a 3 = 2 elevato a 9.'], [`${pw(2, 24)} : ${pw(2, 2)}`, 'No: vale 2 elevato a 22.'], [pw(12, 2), 'No: 12 elevato a 2 = 144.'], [pw(6, 2), 'No: vale 36.']];
+        items = sel(OK, NO, rnd(3, 4)); q = `Tocca tutte le espressioni uguali a <b>${pw(2, 12)}</b>.`; h1 = 'Scrivete tutte le basi come potenze di 2: 4 = 2², 8 = 2³, 16 = 2⁴, 64 = 2⁶.'; h2 = 'Poi usate le proprietà: potenza di potenza → si moltiplicano gli esponenti; prodotto → si sommano; quoziente → si sottraggono.'; }
+      why = it => it.w || 'No: questa non va bene.';
+      const okh = items.filter(x => x.ok).map(x => x.h);
+      E.push({slot:2, type:'find', title:'La lente sui cubi', q, items, why, hint:[h1, h2, `Quelle giuste: ${okh.join(', ')}.`], sol:okh.join(', ')}); }
+    /* slot 3 */
+    { const r = l === 1 ? rnd(3, 5) : l === 2 ? rnd(2, 4) : rnd(3, 6), b = l === 1 ? 2 : l === 2 ? 3 : 10, tgt = b**r;
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi del raddoppio', q:`A ogni giro degli ingranaggi i cubetti del professore si moltiplicano per <b>${b}</b>. Si parte da 1 cubetto e si vuole arrivare a <b>${N(tgt)}</b>: fate esattamente il numero di giri che serve!`, n:l === 3 ? 3 : 2, reps:r,
+        hint:[`Dopo 1 giro: ${b}; dopo 2 giri: ${b*b}; dopo 3 giri: ${b**3}…`, `Cercate l’esponente: ${b}<sup>?</sup> = ${N(tgt)}.`, `${pw(b, r)} = ${N(tgt)}: servono ${r} giri.`], sol:`${pw(b, r)} = ${N(tgt)} → ${r} giri`}); }
+    { let need, q, h;
+      if(l === 1){ need = rnd(6, 9); q = `Battete il ritmo dell’ingranaggio: servono tanti colpi giusti quanto vale <b>√${need*need}</b>.`; h = [`√${need*need} è il numero che moltiplicato per sé stesso dà ${need*need}.`, `${need} · ${need} = ${need*need}.`, `Servono ${need} colpi a tempo.`]; }
+      else if(l === 2){ need = rnd(6, 9); q = `Battete il ritmo dell’ingranaggio: servono tanti colpi giusti quanto è l’esponente in <b>2<sup>?</sup> = ${2**need}</b>.`; h = ['Contate quante volte bisogna moltiplicare 2 per sé stesso.', `2, 4, 8, 16, 32, 64, 128, 256, 512…`, `${pw(2, need)} = ${2**need}: servono ${need} colpi.`]; }
+      else { need = rnd(5, 9); const m = rnd(11, 98)/10; q = `Battete il ritmo: servono tanti colpi giusti quanto è l’esponente nella notazione scientifica di <b>${N(m*10**need)}</b>.`; h = ['In notazione scientifica si scrive un numero da 1 a 10 per una potenza di 10.', `Il primo numero è ${N(m)}: contate di quanti posti si sposta la virgola.`, `${N(m*10**need)} = ${N(m)} · ${pw(10, need)}: servono ${need} colpi.`]; }
+      E.push({slot:3, type:'rhythm', title:'Il ritmo della potenza', q, theme:'ingranaggio', bpm:l === 1 ? 66 : l === 2 ? 76 : 84, need, two:l === 3, hint:h, sol:`${need} colpi a tempo`}); }
+    return E;
+  };
+})();
+
+ROOMS.aree.more = (() => {
+  const cm = v => `${N(v)} cm`;
+  return function(l){
+    const E = [];
+    /* slot 1: quadretti */
+    if(l < 3){ const rows = rnd(3, 4), ws = []; let w = rnd(4, 7); for(let i = 0; i < rows; i++){ ws.push(w); w = Math.max(1, w - rnd(0, 2)); }
+      const c = 22, H = rows*c; let g = '';
+      ws.forEach((w, i) => { for(let j = 0; j < w; j++) g += `<rect x="${20 + j*c}" y="${20 + H - (i + 1)*c}" width="${c}" height="${c}" fill="#CFE4F7" stroke="#1677C9" stroke-width="2"/>`; });
+      const fig = `<svg viewBox="0 0 220 ${H + 40}">${g}</svg>`, A = ws.reduce((s, x) => s + x, 0), P = 2*(ws[0] + rows);
+      if(l === 1) E.push({slot:1, type:'lock', title:'La cassaforte dei quadretti', q:'Ogni quadretto ha il lato di 1 cm. Quanto misura l’<b>area</b> della figura?', fig, ans:A, unit:'cm²',
+        hint:['Ogni quadretto ha area 1 cm²: basta contarli.', `Contate riga per riga, dal basso: ${ws.join(', ')}.`, `${ws.join(' + ')} = ${A} cm².`], sol:`${ws.join(' + ')} = ${A} cm²`});
+      else E.push({slot:1, type:'lock', title:'La cassaforte dei quadretti', q:'Ogni quadretto ha il lato di 1 cm. Quanto misura il <b>perimetro</b> della figura?', fig, ans:P, unit:'cm',
+        hint:['Contate i lati dei quadretti sul bordo della figura, tutto intorno.', `Trucco: i «gradini» si possono spostare e formare un rettangolo di ${ws[0]} × ${rows}.`, `2 · (${ws[0]} + ${rows}) = ${P} cm.`], sol:`2p = 2 · (${ws[0]} + ${rows}) = ${P} cm`}); }
+    else { const s = 2*rnd(2, 10), r = s/2, A = s*s - 3.14*r*r;
+      const fig = `<svg viewBox="0 0 220 200"><rect x="30" y="20" width="160" height="160" fill="#C2185B" opacity=".35" stroke="#1677C9" stroke-width="4"/><circle cx="110" cy="100" r="80" fill="#fff" stroke="#1677C9" stroke-width="4"/><text x="110" y="196" text-anchor="middle" font-size="16" font-weight="800" fill="#18223A">${cm(s)}</text></svg>`;
+      E.push({slot:1, type:'lock', title:'La cassaforte dei quadretti', q:`Nel quadrato di lato ${cm(s)} è inscritto un cerchio. Quanto misura l’area colorata dei quattro angoli? (π ≈ 3,14)`, fig, ans:A, unit:'cm²',
+        hint:['Area colorata = area del quadrato − area del cerchio.', `Quadrato: ${s} · ${s} = ${s*s} cm². Il raggio del cerchio è metà del lato: ${r} cm.`, `Cerchio: 3,14 · ${r*r} = ${N(3.14*r*r)} cm²; ${s*s} − ${N(3.14*r*r)} = ${N(A)} cm².`], sol:`${s*s} − ${N(3.14*r*r)} = ${N(A)} cm²`}); }
+    { const x = rnd(2, 9); let q, r, nr, h;
+      if(l === 1){ q = `${x} m² = quanti dm²?`; r = x*100; nr = [x*10, x*1000]; h = ['Per le aree ogni passaggio di unità vale 100, non 10.', '1 m² = 100 dm² (un quadrato di 10 dm per 10 dm).', `${x} · 100 = ${r} dm².`]; }
+      else if(l === 2){ if(Math.random() < 0.5){ q = `${x} dm² = quanti cm²?`; r = x*100; nr = [x*10, x*1000]; h = ['1 dm² = 100 cm².', 'Si moltiplica per 100.', `${x} · 100 = ${r} cm².`]; }
+        else { const y = x*rnd(2, 9)*100; q = `${N(y)} cm² = quanti m²?`; r = y/10000; nr = [y/100, y/1000]; h = ['Da cm² a dm² si divide per 100, da dm² a m² ancora per 100.', `In tutto si divide per 10.000: 1 m² = 10.000 cm².`, `${N(y)} : 10.000 = ${N(r)} m².`]; } }
+      else { if(Math.random() < 0.5){ q = `Un campo misura ${x} ettari (ha). Quanti m² sono?`; r = x*10000; nr = [x*1000, x*100]; h = ['1 ettaro è un quadrato di 100 m per 100 m.', '1 ha = 10.000 m².', `${x} · 10.000 = ${N(r)} m².`]; }
+        else { q = `${x} km² = quanti ettari?`; r = x*100; nr = [x*1000, x*10]; h = ['1 km² è un quadrato di 1000 m per 1000 m = 1.000.000 m².', '1 ha = 10.000 m², quindi 1 km² = 100 ha.', `${x} · 100 = ${r} ha.`]; } }
+      E.push({slot:1, type:'choice', title:'Le provette delle equivalenze', q, opts:nopts(r, nr, r/1000 === r ? r + 1 : r*100), hint:h, sol:h[2]}); }
+    /* slot 2 */
+    { let items, g = 0;
+      do { const pool = [];
+        const sq = () => { const a = rnd(3, 12); return [`quadrato di lato ${cm(a)}`, a*a]; };
+        const re = () => { const a = rnd(3, 12), b = rnd(2, 10); return [`rettangolo ${a} cm × ${b} cm`, a*b]; };
+        const tr = () => { const b = rnd(4, 14), h = 2*rnd(2, 6); return [`triangolo: base ${cm(b)}, altezza ${cm(h)}`, b*h/2]; };
+        const ro = () => { const D = 2*rnd(3, 8), d = rnd(3, 9); return [`rombo: diagonali ${cm(D)} e ${cm(d)}`, D*d/2]; };
+        const ci = () => { const r = rnd(2, 7); return [`cerchio di raggio ${cm(r)}`, 3.14*r*r]; };
+        const gens = l === 1 ? [sq, re, sq, re] : l === 2 ? [sq, re, tr, ro, pick([tr, re])] : [ci, tr, ro, re, pick([ci, sq])];
+        gens.forEach(f => pool.push(f())); items = pool;
+      } while((new Set(items.map(x => x[1])).size < items.length || new Set(items.map(x => x[0])).size < items.length) && g++ < 300);
+      items.sort((a, b) => a[1] - b[1]);
+      E.push({slot:2, type:'order', title:'La lavagna delle superfici', q:'Mettete le figure in ordine di <b>area</b>, dalla più piccola alla più grande.', items:items.map(x => x[0]), from:'area minore', to:'area maggiore',
+        hint:['Calcolate l’area di ogni figura e scrivetela accanto.', l === 3 ? 'Cerchio: 3,14 · r · r; triangolo: b · h : 2; rombo: D · d : 2.' : 'Quadrato: l · l; rettangolo: b · h; triangolo: b · h : 2; rombo: D · d : 2.', items.map(x => `${N(x[1])} cm²`).join(' < ') + '.'], sol:items.map(x => `${x[0]} (${N(x[1])} cm²)`).join(' < ')}); }
+    { const P = 2*rnd(8, 20), seen = new Set(), items = [], add = (h, ok, w) => { if(!seen.has(h)){ seen.add(h); items.push(ok ? {h, ok:true} : {h, w}); } };
+      let g = 0;
+      while(items.filter(x => x.ok).length < 3 && g++ < 300){ const k = l === 1 ? 0 : rnd(0, 2);
+        if(k === 0 || (k === 2 && P % 4)){ const b = rnd(2, P/2 - 1); add(`rettangolo ${P/2 - b} cm × ${b} cm`, true); }
+        else if(k === 1){ const a = rnd(2, P/2 - 2), b = rnd(2, P - a - 2), c = P - a - b; if(a + b > c && a + c > b && b + c > a) add(`triangolo di lati ${a}, ${b} e ${c} cm`, true); }
+        else add(`quadrato di lato ${cm(P/4)}`, true); }
+      g = 0;
+      while(items.length < 8 && g++ < 500){ const k = rnd(0, 2);
+        if(k === 0){ const b = rnd(2, P/2 - 1), a = P/2 - b + pick([-1, 1, 2]); if(a > 0 && a !== b) add(`rettangolo ${a} cm × ${b} cm`, false, `No: il perimetro è 2 · (${a} + ${b}) = ${2*(a + b)} cm.`); }
+        else if(k === 1){ for(let b = 2; b < P; b++) if(P % b === 0 && b < P/b && 2*(P/b + b) !== P && Math.random() < 0.3){ add(`rettangolo ${P/b} cm × ${b} cm`, false, `No: questo rettangolo ha AREA ${P} cm², ma perimetro ${2*(P/b + b)} cm.`); break; } }
+        else { const a = rnd(2, 12), b = rnd(2, 12), c = rnd(Math.abs(a - b) + 1, a + b - 1); if(a + b + c !== P) add(`triangolo di lati ${a}, ${b} e ${c} cm`, false, `No: ${a} + ${b} + ${c} = ${a + b + c} cm.`); } }
+      const okh = items.filter(x => x.ok).map(x => x.h);
+      E.push({slot:2, type:'find', title:'La lente sui perimetri', q:`Tocca tutte le figure con <b>perimetro ${P} cm</b>.`, items, why:it => it.w || 'No: il perimetro non è giusto.',
+        hint:['Il perimetro è la somma di tutti i lati: rettangolo 2 · (b + h), quadrato 4 · l, triangolo a + b + c.', 'Attenzione: qualche rettangolo ha l’AREA uguale al numero cercato, non il perimetro!', `Quelle giuste: ${okh.join('; ')}.`], sol:okh.join('; ')}); }
+    /* slot 3 */
+    { const x = rnd(2, 9); let T, ok, no;
+      if(l === 1){ T = `${x} m²`; ok = [`${N(x*100)} dm²`, `${N(x*10000)} cm²`]; no = [`${N(x*10)} dm²`, `${N(x*100)} cm²`, `${N(x*1000)} dm²`]; }
+      else if(l === 2){ T = `${x} dm²`; ok = [`${N(x*100)} cm²`, `${N(x/100)} m²`, `${N(x*10000)} mm²`]; no = [`${N(x*10)} cm²`, `${N(x/10)} m²`, `${N(x*1000)} mm²`]; }
+      else { T = `${x} ha`; ok = [`${N(x*10000)} m²`, `${N(x/100)} km²`]; no = [`${N(x*1000)} m²`, `${N(x*100)} m²`, `${N(x/10)} km²`]; }
+      E.push({slot:3, type:'hold', title:'Le leve delle unità', q:`Tenete premute insieme tutte le leve uguali a <b>${T}</b>.`, handles:ok.map(h => ({h, ok:true})).concat(no.map(h => ({h}))),
+        why:'Attenzione: per le aree ogni passaggio di unità vale 100, non 10!',
+        hint:['Nelle misure di superficie, da un’unità alla successiva si moltiplica (o si divide) per 100.', l === 3 ? '1 ha = 10.000 m²; 1 km² = 100 ha.' : 'm² → dm² → cm² → mm²: ogni freccia è · 100.', `Le leve giuste: ${ok.join(', ')}.`], sol:`${T} = ${ok.join(' = ')}`}); }
+    { let clues, ans, h, sol;
+      if(l < 3){ const t = l === 1 ? 50 : pick([20, 25]), a = rnd(2, 6), b = rnd(2, 5), na = a*100/t, nb = b*100/t; ans = na*nb;
+        clues = [`Il pavimento della stanza è un rettangolo lungo ${a} m.`, `La stanza è larga ${b} m.`, `Le piastrelle sono quadrate, di lato ${t} cm.`, 'Il codice è il numero di piastrelle che servono per coprire tutto il pavimento.'];
+        h = [`Trasformate tutto in centimetri: ${a} m = ${a*100} cm, ${b} m = ${b*100} cm.`, `In lunghezza ci stanno ${a*100} : ${t} = ${na} piastrelle, in larghezza ${nb}.`, `${na} · ${nb} = ${ans} piastrelle.`]; sol = `${na} · ${nb} = ${ans} piastrelle`; }
+      else { const a = 2*rnd(1, 4), b = 2*rnd(1, 3), k = pick([6, 8, 10, 12]), tiles = (a*100/40)*(b*100/40); ans = Math.ceil(tiles/k);
+        clues = [`La stanza da piastrellare misura ${a} m × ${b} m.`, 'Le piastrelle sono quadrate, di lato 40 cm.', `Ogni scatola contiene ${k} piastrelle.`, 'Il codice è il numero di scatole da comprare (le scatole non si aprono a metà).'];
+        h = [`In lunghezza: ${a*100} : 40 = ${a*100/40} piastrelle; in larghezza: ${b*100} : 40 = ${b*100/40}.`, `Servono ${tiles} piastrelle.`, `${tiles} : ${k} = ${N(tiles/k)} → servono ${ans} scatole.`]; sol = `${tiles} piastrelle → ${ans} scatole`; }
+      E.push({slot:3, type:'roles', title:'I biglietti delle piastrelle', q:'Il professore voleva rifare il pavimento: leggete i quattro biglietti.', clues, ans, hint:h, sol}); }
+    return E;
+  };
+})();
+
+ROOMS.divisibilita.more = (() => {
+  const divs = n => { const r = []; for(let i = 1; i <= n; i++) if(n % i === 0) r.push(i); return r; };
+  const lcm = (a, b) => a/gcd(a, b)*b;
+  const fact = n => { const f = []; let p = 2; while(n > 1){ while(n % p === 0){ f.push(p); n /= p; } p++; } return f; };
+  const sumDig = n => String(n).split('').reduce((s, c) => s + +c, 0);
+  return function(l){
+    const E = [];
+    /* slot 1 */
+    { const k = l === 1 ? 3 : l === 2 ? 9 : 6, a = rnd(1, 9), b = rnd(0, 9), c = rnd(0, 9); let shown, ok = [], num;
+      if(k === 6){ for(let d = 0; d <= 9; d++) if((a*100 + b*10 + d) % 6 === 0) ok.push(d); shown = `${a}${b}<b>?</b>`; num = d => a*100 + b*10 + d; }
+      else { for(let d = 0; d <= 9; d++) if((a*100 + d*10 + c) % k === 0) ok.push(d); shown = `${a}<b>?</b>${c}`; num = d => a*100 + d*10 + c; }
+      const r = ok[0];
+      E.push({slot:1, type:'lock', title:'Il lucchetto della cifra mancante', q:`Qual è la cifra <b>più piccola</b> da mettere al posto di ? perché ${shown} sia divisibile per ${k}?`, ans:r,
+        hint:[k === 6 ? 'Un numero è divisibile per 6 se è divisibile sia per 2 (ultima cifra pari) sia per 3 (somma delle cifre multipla di 3).' : `Un numero è divisibile per ${k} se la somma delle cifre è un multiplo di ${k}.`, k === 6 ? `Provate solo le cifre pari 0, 2, 4, 6, 8 e controllate la somma ${a} + ${b} + ?.` : `La somma delle cifre note è ${a + c}: aggiungete la cifra più piccola che porta a un multiplo di ${k}.`, `Con ${r} si ottiene ${num(r)}, somma delle cifre ${sumDig(num(r))}.`], sol:`${num(r)}`}); }
+    if(l === 1){ const k = rnd(3, 12), m = rnd(8, 30), r = k*m;
+      E.push({slot:1, type:'choice', title:'Le provette dei multipli', q:`Quale provetta contiene un <b>multiplo di ${k}</b>?`, opts:opts4(String(r), [String(r + 1), String(r - 1), String(r + Math.ceil(k/2))], String(r + k - 1 === r ? r + 2 : r + k - 1)),
+        hint:[`Un multiplo di ${k} si ottiene moltiplicando ${k} per un numero naturale.`, `Dividete ogni numero per ${k}: il multiplo dà resto 0.`, `${r} = ${k} · ${m}.`], sol:`${r} = ${k} · ${m}`}); }
+    else if(l === 2){ const p = pick([31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]), tr = shuffle([39, 49, 51, 57, 63, 69, 77, 81, 87, 91, 93]);
+      E.push({slot:1, type:'choice', title:'Le provette dei multipli', q:'Quale provetta contiene un <b>numero primo</b>?', opts:opts4(String(p), tr.slice(0, 2).map(String), String(tr[2])),
+        hint:['Un numero primo è divisibile solo per 1 e per sé stesso.', 'Provate a dividere i numeri dispari per 3, 7 e 11: 51 = 3 · 17, 91 = 7 · 13…', `${p} è primo.`], sol:`${p} è primo`}); }
+    else { const ok = pick([[8, 15], [9, 14], [10, 21], [12, 25], [14, 15], [16, 27], [20, 21], [25, 36], [8, 27], [22, 35]]), bad = shuffle([[12, 18], [15, 25], [14, 21], [9, 24], [16, 30], [20, 35], [21, 27], [26, 39]]).slice(0, 3), t = p => `${p[0]} e ${p[1]}`;
+      E.push({slot:1, type:'choice', title:'Le provette dei multipli', q:'Quale coppia è formata da numeri <b>primi tra loro</b> (cioè con MCD = 1)?', opts:opts4(t(ok), bad.slice(0, 2).map(t), t(bad[2])),
+        hint:['Due numeri sono primi tra loro se non hanno divisori comuni oltre a 1.', 'Scomponete: se non c’è nessun fattore primo in comune, l’MCD è 1.', `${ok[0]} = ${fact(ok[0]).join(' · ')} e ${ok[1]} = ${fact(ok[1]).join(' · ')}: nessun fattore comune.`], sol:`MCD(${ok[0]}, ${ok[1]}) = 1`}); }
+    /* slot 2 */
+    { const cnt = l === 1 ? 4 : 5, mx = l === 1 ? 30 : l === 2 ? 60 : 100; let sel, g = 0;
+      do { sel = shuffle(Array.from({length:mx - 1}, (_, i) => i + 2)).slice(0, cnt); } while(new Set(sel.map(n => divs(n).length)).size < cnt && g++ < 500);
+      sel.sort((a, b) => divs(a).length - divs(b).length);
+      E.push({slot:2, type:'order', title:'La lavagna dei divisori', q:'Mettete i numeri in ordine, da quello con <b>meno divisori</b> a quello con <b>più divisori</b>.', items:sel.map(String), from:'meno divisori', to:'più divisori',
+        hint:['Per ogni numero elencate i divisori a coppie: 1 · n, 2 · …', 'I numeri primi hanno solo 2 divisori.', sel.map(n => `${n}: ${divs(n).length}`).join('; ') + '.'], sol:sel.map(n => `${n} (${divs(n).length})`).join(' → ')}); }
+    { let a, b = 0, ans, q, h, mx;
+      if(l === 1){ const n = rnd(3, 6); ans = rnd(2, 8); a = n*ans; mx = 12; q = `L’asta del professore è lunga ${a} cm. Regolate la lunghezza dei pezzi per tagliarla in <b>${n} pezzi uguali</b>, senza avanzi.`; h = [`I pezzi devono essere un divisore di ${a}.`, `${a} : ${n} = ?`, `${a} : ${n} = ${ans} cm.`]; }
+      else if(l === 2){ a = pick([14, 15, 21, 22, 25, 26, 27, 33, 34, 35, 38, 39, 45, 46, 49, 51, 55, 57]); ans = a/fact(a)[0]; mx = 30; q = `L’asta è lunga ${a} cm. Regolate la lunghezza dei pezzi: dev’essere la <b>più lunga possibile</b> (ma più corta dell’asta) per tagliarla in pezzi uguali senza avanzi.`; h = [`Cercate il divisore più grande di ${a}, escluso ${a}.`, `Il divisore più grande si ottiene dividendo ${a} per il suo divisore più piccolo (diverso da 1): ${fact(a)[0]}.`, `${a} : ${fact(a)[0]} = ${ans} cm.`]; }
+      else { const gg = rnd(3, 9), [m, k] = pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [3, 7], [5, 6]]); a = gg*m; b = gg*k; ans = gg; mx = 20; q = `Due aste lunghe ${a} cm e ${b} cm vanno tagliate in pezzi <b>tutti uguali</b>, senza avanzi, i più lunghi possibile. Regolate la lunghezza dei pezzi.`; h = [`La lunghezza deve dividere sia ${a} sia ${b}: è un divisore comune, il più grande.`, `${a} = ${fact(a).join(' · ')}, ${b} = ${fact(b).join(' · ')}.`, `MCD(${a}, ${b}) = ${gg} cm.`]; }
+      const bar = (L, v, y) => { const s = 260/Math.max(a, b), n = Math.floor(L/v), rest = L - n*v; let g = ''; for(let i = 0; i < n; i++) g += `<rect x="${(20 + i*v*s).toFixed(1)}" y="${y}" width="${(v*s).toFixed(1)}" height="26" fill="${i % 2 ? '#B9D77A' : '#DDEBB8'}" stroke="#6A8D12" stroke-width="2"/>`;
+        if(rest > 0) g += `<rect x="${(20 + n*v*s).toFixed(1)}" y="${y}" width="${(rest*s).toFixed(1)}" height="26" fill="#F3A5A5" stroke="#C62828" stroke-width="2"/>`; return g + `<text x="20" y="${y - 6}" font-size="14" font-weight="800" fill="#18223A">${L} cm: ${n} pezzi${rest ? `, avanzo ${rest} cm` : ''}</text>`; };
+      E.push({slot:2, type:'dial', title:'L’esperimento delle aste', q, min:1, max:mx, step:1, start:1, ans, fmt:v => `pezzi da ${v} cm`, draw:v => `<svg viewBox="0 0 300 ${b ? 140 : 80}">${bar(a, v, 34)}${b ? bar(b, v, 100) : ''}</svg>`,
+        wrong:v => (a % v || (b && b % v)) ? `Con pezzi da ${v} cm resta un avanzo.` : `Pezzi da ${v} cm vanno bene, ma non sono quelli richiesti.`, hint:h, sol:`pezzi da ${ans} cm`}); }
+    /* slot 3 */
+    { let gs, r;
+      if(l < 3){ const [a, b] = pick(l === 1 ? [[8, 12], [6, 9], [10, 15], [12, 18], [6, 8]] : [[9, 12], [8, 20], [10, 25], [12, 16], [6, 15], [4, 10]]); gs = [a, b]; r = lcm(a, b)/a; }
+      else { gs = pick([[4, 6, 8], [6, 8, 12], [6, 9, 12], [4, 6, 12], [10, 12, 15]]); r = lcm(lcm(gs[0], gs[1]), gs[2])/gs[0]; }
+      const L = gs.reduce(lcm), nm = ['A', 'B', 'C'];
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi dei denti', q:`Gli ingranaggi hanno ${gs.map((d, i) => `${nm[i]} ${d} denti`).join(', ')}. Ognuno ha una tacca rossa: ora sono tutte in alto. Quanti giri completi deve fare A perché le tacche tornino tutte in alto insieme? Toccate insieme gli ingranaggi <b>una volta per ogni giro di A</b>.`, n:gs.length, reps:r,
+        hint:['Contate i denti che passano: devono essere un multiplo comune dei numeri di denti.', `Il primo multiplo comune è mcm(${gs.join(', ')}) = ${L} denti.`, `A fa ${L} : ${gs[0]} = ${r} giri.`], sol:`mcm = ${L}; giri di A = ${r}`}); }
+    if(l < 3){ const lim = l === 1 ? 30 : 100, ps = l === 1 ? [2, 3] : [2, 3, 5], last = l === 1 ? 5 : 7, ex = p => { const m = p*rnd(2, Math.floor(lim/p)); return m; };
+      E.push({slot:3, type:'path', title:'Il percorso dei setacci', q:`Accompagnate la cometa nel «setaccio» di Eratostene: tra i numeri da 2 a ${lim} si cancellano, uno dopo l’altro, i multipli dei numeri primi. Alla fine restano solo i primi.`, sprite:'cometa', what:'la cometa', start:`numeri da 2 a ${lim}`, stations:ps.map(p => `via i multipli di ${p}`), end:`via i multipli di ${last}: restano i primi!`, notes:ps.map(p => { const m = ex(p); return `per esempio ${m} = ${p} · ${m/p} viene cancellato (${p} resta: è primo)`; }),
+        hint:['Muovete il dito piano, restando al centro della strada.', 'Se uscite si riparte dall’ultima tappa: potete darvi il cambio.', `Si cancellano i multipli di ${ps.concat(last).join(', ')}: ${l === 1 ? 'restano 2, 3, 5, 7, 11, 13, 17, 19, 23, 29' : 'restano i 25 numeri primi minori di 100'}.`], sol:`multipli di ${ps.concat(last).join(', ')} cancellati`}); }
+    else { let g, m, k, f; do { g = pick([12, 18, 20, 24, 30, 36, 40, 42, 45]); [m, k] = pick([[2, 3], [3, 4], [2, 5], [3, 5], [4, 5], [5, 7], [3, 7]]); f = fact(g); } while(f.length < 3 || f.length > 5);
+      let a = g*m, b = g*k; const A0 = a, B0 = b, st = [], notes = [];
+      f.forEach((p, i) => { a /= p; b /= p; if(i < f.length - 1){ st.push(`${a} e ${b}`); notes.push(`${p} divide tutti e due: lo mettiamo nell’MCD`); } });
+      E.push({slot:3, type:'path', title:'Il percorso dei setacci', q:`Accompagnate la cometa nel calcolo di MCD(${A0}, ${B0}): a ogni tappa si dividono tutti e due i numeri per un fattore primo comune.`, sprite:'cometa', what:'la cometa', start:`${A0} e ${B0}`, stations:st, end:`${a} e ${b}: MCD = ${g}`, notes,
+        hint:['Muovete il dito piano, restando al centro della strada.', `I fattori comuni sono ${f.join(' · ')}.`, `MCD(${A0}, ${B0}) = ${f.join(' · ')} = ${g}.`], sol:`MCD(${A0}, ${B0}) = ${g}`}); }
+    return E;
+  };
+})();
+
+ROOMS.angoli.more = (() => {
+  const R = d => d*Math.PI/180, f1 = x => x.toFixed(1);
+  const T = (x, y, s, c, fs) => `<text x="${f1(x)}" y="${f1(y)}" text-anchor="middle" font-size="${fs || 18}" font-weight="800" fill="${c || '#18223A'}">${s}</text>`;
+  const sector = (cx, cy, s, e, r, col) => { const P = a => [cx + r*Math.cos(R(a)), cy - r*Math.sin(R(a))], p = P(s), q = P(e); return `<path d="M${cx} ${cy}L${f1(p[0])} ${f1(p[1])}A${r} ${r} 0 ${e - s > 180 ? 1 : 0} 0 ${f1(q[0])} ${f1(q[1])}z" fill="${col}" opacity=".35"/>`; };
+  const lab = (cx, cy, a, r, s, c) => T(cx + r*Math.cos(R(a)), cy - r*Math.sin(R(a)) + 6, s, c);
+  const line = (cx, cy, a, L) => `<path d="M${f1(cx - L*Math.cos(R(a)))} ${f1(cy + L*Math.sin(R(a)))}L${f1(cx + L*Math.cos(R(a)))} ${f1(cy - L*Math.sin(R(a)))}" stroke="#18223A" stroke-width="4" stroke-linecap="round"/>`;
+  const gonio = v => { const cx = 170, cy = 186, r = 150, P = (a, rr) => [cx + rr*Math.cos(R(a)), cy - rr*Math.sin(R(a))]; let g = `<path d="M${cx - r} ${cy}A${r} ${r} 0 0 1 ${cx + r} ${cy}z" fill="#FFF3E0" stroke="#8D6B48" stroke-width="3"/>`;
+    for(let a = 0; a <= 180; a += 5){ const p = P(a, r), q = P(a, r - (a % 30 ? (a % 10 ? 6 : 11) : 18)); g += `<path d="M${f1(p[0])} ${f1(p[1])}L${f1(q[0])} ${f1(q[1])}" stroke="#8D6B48" stroke-width="2"/>`; if(a % 30 === 0 && a % 180){ const t = P(a, r - 34); g += T(t[0], t[1] + 5, a, '#8D6B48', 14); } }
+    const e = P(v, r - 6), p = P(v, 60);
+    return `<svg viewBox="0 0 340 200">${g}${T(cx + r - 22, cy - 10, 0, '#8D6B48', 14)}${T(cx - r + 26, cy - 10, 180, '#8D6B48', 14)}<path d="M${cx} ${cy}L${cx + 60} ${cy}A60 60 0 0 0 ${f1(p[0])} ${f1(p[1])}z" fill="#D84315" opacity=".3"/><path d="M${cx} ${cy}H${cx + r - 6}" stroke="#18223A" stroke-width="5" stroke-linecap="round"/><path d="M${cx} ${cy}L${f1(e[0])} ${f1(e[1])}" stroke="#D84315" stroke-width="5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="#18223A"/></svg>`; };
+  const clock = (h, m) => { const ah = 90 - (h % 12)*30 - m/2, am = 90 - m*6; let g = '<circle cx="60" cy="60" r="54" fill="#fff" stroke="#5E6A82" stroke-width="4"/>'; for(let i = 0; i < 12; i++) g += `<circle cx="${f1(60 + 46*Math.cos(R(i*30)))}" cy="${f1(60 + 46*Math.sin(R(i*30)))}" r="3" fill="#5E6A82"/>`;
+    return `<svg viewBox="0 0 120 120" width="110" height="110" style="display:block;margin:6px auto 0">${g}<path d="M60 60L${f1(60 + 28*Math.cos(R(ah)))} ${f1(60 - 28*Math.sin(R(ah)))}" stroke="#18223A" stroke-width="6" stroke-linecap="round"/><path d="M60 60L${f1(60 + 42*Math.cos(R(am)))} ${f1(60 - 42*Math.sin(R(am)))}" stroke="#D84315" stroke-width="4" stroke-linecap="round"/><circle cx="60" cy="60" r="4" fill="#18223A"/></svg>`; };
+  return function(l){
+    const E = [];
+    /* slot 1: rette */
+    if(l === 1){ let a; do { a = rnd(25, 155); } while(Math.abs(a - 90) < 8); const opp = Math.random() < 0.5, cx = 170, cy = 105;
+      const fig = `<svg viewBox="0 0 340 210">${sector(cx, cy, 0, a, 46, '#D84315')}${sector(cx, cy, opp ? 180 : a, opp ? 180 + a : 180, 40, '#1677C9')}${line(cx, cy, 0, 150)}${line(cx, cy, a, 100)}${lab(cx, cy, a/2, 72, a + '°', '#D84315')}${lab(cx, cy, opp ? 180 + a/2 : (a + 180)/2, 66, '?', '#1677C9')}</svg>`, r = opp ? a : 180 - a;
+      E.push({slot:1, type:'lock', title:'La cassaforte delle rette', q:`Due rette si incrociano. Quanto misura l’angolo con il punto di domanda?`, fig, ans:r, unit:'°',
+        hint:[opp ? 'I due angoli sono opposti al vertice: stanno «uno di fronte all’altro».' : 'I due angoli sono adiacenti: insieme formano un angolo piatto.', opp ? 'Gli angoli opposti al vertice sono sempre uguali.' : `Quindi si calcola 180° − ${a}°.`, `L’angolo misura ${r}°.`], sol:opp ? `opposti al vertice: ${r}°` : `180° − ${a}° = ${r}°`}); }
+    else if(l === 2){ let a; do { a = rnd(35, 145); } while(Math.abs(a - 90) < 10); const th = 180 - a, kind = pick(['alterni interni', 'corrispondenti', 'coniugati interni']), r = kind === 'coniugati interni' ? 180 - a : a;
+      const dx = 70/Math.tan(R(th)), T0 = [170 + dx/2, 70], B0 = [170 - dx/2, 140];
+      const tgt = kind === 'alterni interni' ? [th, 180] : kind === 'corrispondenti' ? [th + 180, 360] : [0, th];
+      const fig = `<svg viewBox="0 0 340 210"><path d="M20 70H320M20 140H320" stroke="#18223A" stroke-width="4"/>${sector(T0[0], T0[1], th + 180, 360, 34, '#D84315')}${sector(B0[0], B0[1], tgt[0], tgt[1], 30, '#1677C9')}<path d="M${f1(170 + 130*Math.cos(R(th)))} ${f1(105 - 130*Math.sin(R(th)))}L${f1(170 - 130*Math.cos(R(th)))} ${f1(105 + 130*Math.sin(R(th)))}" stroke="#18223A" stroke-width="4"/>${lab(T0[0], T0[1], (th + 180 + 360)/2, 52, a + '°', '#D84315')}${lab(B0[0], B0[1], (tgt[0] + tgt[1])/2, 48, '?', '#1677C9')}</svg>`;
+      E.push({slot:1, type:'lock', title:'La cassaforte delle rette', q:`Le due rette orizzontali sono <b>parallele</b>, tagliate da una trasversale. Gli angoli colorati sono <b>${kind}</b>. Quanto misura l’angolo con il punto di domanda?`, fig, ans:r, unit:'°',
+        hint:['Con due rette parallele tagliate da una trasversale ci sono angoli uguali e angoli supplementari.', kind === 'coniugati interni' ? 'Gli angoli coniugati interni sono supplementari: insieme fanno 180°.' : `Gli angoli ${kind} sono uguali.`, `L’angolo misura ${r}°.`], sol:kind === 'coniugati interni' ? `180° − ${a}° = ${r}°` : `${kind}: ${r}°`}); }
+    else { const A = rnd(25, 80), B = rnd(25, 150 - A - 10), r = A + B;
+      E.push({slot:1, type:'lock', title:'La cassaforte delle rette', q:`In un triangolo ABC l’angolo A misura ${A}° e l’angolo B misura ${B}°. Prolungando il lato BC oltre C si forma l’<b>angolo esterno</b> in C. Quanto misura?`, ans:r, unit:'°',
+        hint:['L’angolo esterno e l’angolo interno in C sono adiacenti: insieme fanno 180°.', `Angolo interno C = 180° − ${A}° − ${B}° = ${180 - r}°; esterno = 180° − ${180 - r}°.`, `Più veloce: l’angolo esterno è uguale alla somma degli altri due interni: ${A}° + ${B}° = ${r}°.`], sol:`${A}° + ${B}° = ${r}°`}); }
+    if(l === 1){ let s, ty, g = 0; do { const k = pick(['equilatero', 'isoscele', 'scaleno']), a = rnd(3, 12); ty = k; s = k === 'equilatero' ? [a, a, a] : k === 'isoscele' ? [a, a, rnd(2, 2*a - 1)] : [a, rnd(3, 12), rnd(3, 12)]; } while((s[0] + s[1] <= s[2] || s[0] + s[2] <= s[1] || s[1] + s[2] <= s[0] || (ty === 'isoscele' && s[2] === s[0]) || (ty === 'scaleno' && new Set(s).size < 3)) && g++ < 500);
+      s = shuffle(s); const other = ['equilatero', 'isoscele', 'scaleno'].filter(x => x !== ty);
+      E.push({slot:1, type:'choice', title:'Le provette dei lati', q:`Un triangolo ha i lati di <b>${s.join(' cm, ')} cm</b>. Che tipo di triangolo è?`, opts:opts4(ty, other, 'quadrato'),
+        hint:['Rispetto ai lati, un triangolo può essere equilatero, isoscele o scaleno.', 'Equilatero: 3 lati uguali. Isoscele: 2 lati uguali. Scaleno: tutti diversi.', `È ${ty}.`], sol:`${s.join(', ')} → ${ty}`}); }
+    else if(l === 2){ const t = s => `${s[0]} cm, ${s[1]} cm, ${s[2]} cm`; let ok; do { ok = [rnd(3, 12), rnd(3, 12), rnd(3, 12)]; } while(Math.max(...ok)*2 >= ok[0] + ok[1] + ok[2]);
+      const x = rnd(2, 6), y = rnd(2, 6), bad1 = [x, y, x + y], bad2 = [x, y, x + y + rnd(1, 5)], bad3 = [rnd(2, 4), rnd(2, 4), rnd(9, 14)];
+      E.push({slot:1, type:'choice', title:'Le provette dei lati', q:'Con quale terna di bastoncini si può costruire un <b>triangolo</b>?', opts:opts4(t(shuffle(ok)), [t(shuffle(bad1)), t(shuffle(bad2)), t([x + 1, y + 2, x + y + 6])], [t(bad3), t([1, 2, 12]), t([2, 3, 15])]),
+        hint:['In un triangolo ogni lato deve essere minore della somma degli altri due.', 'Basta controllare il lato più lungo: deve essere più corto degli altri due messi insieme.', `Funziona solo ${t(ok)}.`], sol:t(ok)}); }
+    else { let a, b, c, r; do { a = rnd(60, 130); b = rnd(60, 130); c = rnd(60, 130); r = 360 - a - b - c; } while(r < 40 || r > 170 || r === a || r === b || r === c);
+      E.push({slot:1, type:'choice', title:'Le provette dei lati', q:`Un quadrilatero ha tre angoli di ${a}°, ${b}° e ${c}°. Quanto misura il quarto angolo?`, opts:opts4(`${r}°`, [`${r + 10}°`, `${r - 10}°`, `${r + 20}°`], [`${540 - a - b - c}°`, `${r + 45}°`]),
+        hint:['Un quadrilatero si divide con una diagonale in due triangoli.', 'La somma degli angoli interni di un quadrilatero è 2 · 180° = 360°.', `360° − ${a}° − ${b}° − ${c}° = ${r}°.`], sol:`360° − ${a + b + c}° = ${r}°`}); }
+    /* slot 2 */
+    { let pool, cnt, h1, h2;
+      if(l === 1){ pool = [['un terzo di angolo retto', 30], ['metà di un angolo retto', 45], ['due terzi di angolo retto', 60], ['un angolo retto', 90], ['un angolo retto e mezzo', 135], ['un angolo piatto', 180], ['tre angoli retti', 270], ['un angolo giro', 360]]; cnt = 4; h1 = 'L’angolo retto misura 90°: trasformate tutto in gradi.'; h2 = 'Un piatto sono due retti, un giro sono quattro retti.'; }
+      else if(l === 2){ pool = [[[1, 12], 30], [[1, 8], 45], [[1, 6], 60], [[1, 4], 90], [[1, 3], 120], [[3, 8], 135], [[1, 2], 180], [[2, 3], 240], [[3, 4], 270]].map(([f, v]) => [`${frac(f[0], f[1])} di giro`, v]); cnt = 5; h1 = 'Un giro completo misura 360°.'; h2 = 'Per esempio 1/8 di giro = 360° : 8 = 45°.'; }
+      else { pool = [['angolo interno del triangolo equilatero', 60], ['angolo esterno del pentagono regolare', 72], ['angolo interno del quadrato', 90], ['angolo interno del pentagono regolare', 108], ['angolo interno dell’esagono regolare', 120], ['angolo interno dell’ottagono regolare', 135], ['angolo interno del decagono regolare', 144], ['angolo esterno del triangolo equilatero', 120], ['angolo esterno dell’esagono regolare', 60], ['angolo esterno dell’ottagono regolare', 45]]; cnt = 5; h1 = 'Angolo esterno di un poligono regolare = 360° : numero dei lati.'; h2 = 'Angolo interno = 180° − angolo esterno.'; }
+      let sel, g = 0; do { sel = shuffle(pool).slice(0, cnt); } while(new Set(sel.map(x => x[1])).size < cnt && g++ < 300);
+      sel.sort((a, b) => a[1] - b[1]);
+      E.push({slot:2, type:'order', title:'La lavagna degli angoli', q:'Mettete gli angoli in ordine, dal più piccolo al più grande.', items:sel.map(x => x[0]), from:'più piccolo', to:'più grande', hint:[h1, h2, sel.map(x => `${x[1]}°`).join(' < ') + '.'], sol:sel.map(x => `${plain(x[0])} = ${x[1]}°`).join(' < ')}); }
+    { let X, q, h;
+      if(l === 1){ const hh = rnd(1, 6); X = 30*hh; q = `L’orologio del laboratorio segna le <b>${hh}:00</b>. Regolate il goniometro sull’angolo tra le due lancette.${clock(hh, 0)}`; h = ['Il quadrante è un giro di 360° diviso in 12 ore.', 'Tra un numero e il successivo ci sono 360° : 12 = 30°.', `${hh} · 30° = ${X}°.`]; }
+      else if(l === 2){ const m = 5*rnd(1, 6); X = 6*m; q = `In quanti gradi ruota la <b>lancetta dei minuti</b> in ${m} minuti? Regolate il goniometro.`; h = ['In 60 minuti la lancetta dei minuti fa un giro completo: 360°.', 'In un minuto ruota di 360° : 60 = 6°.', `${m} · 6° = ${X}°.`]; }
+      else { const hh = rnd(1, 11); X = Math.abs(180 - 30*hh - 15); if(X > 180) X = 360 - X; q = `L’orologio segna le <b>${hh}:30</b>. Regolate il goniometro sull’angolo tra le due lancette (il più piccolo).${clock(hh, 30)}`; h = ['Alle e mezza la lancetta dei minuti è sul 6, cioè a 180° dalle 12.', `La lancetta delle ore si sposta di 0,5° al minuto: alle ${hh}:30 è a ${30*hh} + 15 = ${30*hh + 15}° dalle 12.`, `La differenza è ${X}°.`]; }
+      E.push({slot:2, type:'dial', title:'L’esperimento della lancetta', q, min:0, max:180, step:5, start:0, ans:X, fmt:() => '? °', draw:gonio, wrong:v => `Non è l’angolo giusto: ${v < X ? 'apritelo di più' : 'chiudetelo un po’'}.`, hint:h, sol:`${X}°`}); }
+    /* slot 3 */
+    { let st, end, notes, name, total;
+      if(l === 1){ name = pick(['quadrato', 'rettangolo']); const a = rnd(2, 9), b = name === 'quadrato' ? a : rnd(2, 9) + (a === 9 ? 0 : 1); st = ['1ª svolta: 90°', '2ª svolta: 90°', '3ª svolta: 90°']; end = '4ª svolta: 90° (giro completo!)'; notes = [`il primo lato è lungo ${a} m: all’angolo si gira di 90°`, `lato di ${b} m, poi un’altra svolta di 90°`, 'ancora un lato e un’altra svolta']; total = '4 · 90° = 360°'; }
+      else if(l === 2){ if(Math.random() < 0.5){ name = 'triangolo equilatero'; st = ['1ª svolta: 120°', '2ª svolta: 120°']; end = '3ª svolta: 120° (giro completo!)'; notes = ['l’angolo interno è 60°: si gira di 180° − 60° = 120°', 'tutti gli angoli sono uguali: ancora 120°']; total = '3 · 120° = 360°'; }
+        else { const x = pick([50, 60, 70, 80]); name = `rombo con angoli di ${x}° e ${180 - x}°`; st = [`1ª svolta: ${180 - x}°`, `2ª svolta: ${x}°`, `3ª svolta: ${180 - x}°`]; end = `4ª svolta: ${x}° (giro completo!)`; notes = [`angolo interno ${x}°: si gira di ${180 - x}°`, `angolo interno ${180 - x}°: si gira di ${x}°`, 'gli angoli opposti del rombo sono uguali']; total = `2 · ${180 - x}° + 2 · ${x}° = 360°`; } }
+      else { if(Math.random() < 0.5){ name = 'pentagono regolare'; st = ['1ª svolta: 72°', '2ª svolta: 72°', '3ª svolta: 72°', '4ª svolta: 72°']; end = '5ª svolta: 72° (giro completo!)'; notes = ['angolo interno 108°: si gira di 180° − 108° = 72°', 'ancora 72°', 'ancora 72°', 'ancora 72°']; total = '5 · 72° = 360°'; }
+        else { let a, b, c, d; do { a = 5*rnd(14, 26); b = 5*rnd(14, 26); c = 5*rnd(14, 26); d = 360 - a - b - c; } while(d < 60 || d > 140); name = `quadrilatero con angoli ${a}°, ${b}°, ${c}°, ${d}°`; st = [`1ª svolta: ${180 - a}°`, `2ª svolta: ${180 - b}°`, `3ª svolta: ${180 - c}°`]; end = `4ª svolta: ${180 - d}° (giro completo!)`; notes = [`angolo interno ${a}°: svolta di ${180 - a}°`, `angolo interno ${b}°: svolta di ${180 - b}°`, `angolo interno ${c}°: svolta di ${180 - c}°`]; total = `${180 - a}° + ${180 - b}° + ${180 - c}° + ${180 - d}° = 360°`; } }
+      E.push({slot:3, type:'path', title:'Il giro del poligono', q:`Il robot del professore percorre il bordo di un <b>${name}</b>: a ogni vertice gira di un angolo esterno. Accompagnatelo!`, sprite:'cometa', what:'il robot', start:'partenza', stations:st, end, notes,
+        hint:['Muovete il dito piano, restando al centro della strada.', 'A ogni vertice il robot gira dell’angolo esterno, cioè 180° meno l’angolo interno.', `Alla fine ha girato in tutto ${total}: un giro completo.`], sol:total}); }
+    { const tot = l === 1 ? 90 : 180, k = l === 3 ? 3 : 2; let ok, no, g = 0;
+      const sums = arr => { const out = []; for(let i = 0; i < arr.length; i++) for(let j = i + 1; j < arr.length; j++){ if(k === 2) out.push(arr[i] + arr[j]); else for(let m = j + 1; m < arr.length; m++) out.push(arr[i] + arr[j] + arr[m]); } return out; };
+      do { if(k === 2){ const a = rnd(10, tot - 10); ok = [a, tot - a]; } else { const a = rnd(20, 100), b = rnd(20, 150 - a); ok = [a, b, 180 - a - b]; }
+        no = []; while(no.length < (k === 2 ? 4 : 3)){ const v = rnd(10, tot === 90 ? 85 : 170); if(!ok.includes(v) && !no.includes(v)) no.push(v); }
+      } while((new Set(ok).size < k || sums(ok.concat(no)).filter(s => s === tot).length !== 1) && g++ < 1000);
+      E.push({slot:3, type:'hold', title:'Le leve delle coppie', q:k === 2 ? `Tenete premute insieme le due leve con angoli <b>${tot === 90 ? 'complementari' : 'supplementari'}</b>.` : 'Tenete premute insieme le tre leve con gli angoli di uno stesso <b>triangolo</b>.', handles:ok.map(v => ({h:`${v}°`, ok:true})).concat(no.map(v => ({h:`${v}°`}))),
+        why:`Attenzione: con quella leva la somma non fa ${tot}°!`,
+        hint:[k === 2 ? `Due angoli ${tot === 90 ? 'complementari' : 'supplementari'} insieme fanno ${tot}°.` : 'I tre angoli di un triangolo insieme fanno 180°.', `Cercate ${k === 2 ? 'la coppia' : 'la terna'} con somma ${tot}°.`, `Le leve giuste: ${ok.map(v => v + '°').join(' + ')} = ${tot}°.`], sol:`${ok.map(v => v + '°').join(' + ')} = ${tot}°`}); }
+    return E;
+  };
+})();
+
+ROOMS.proporzioni.more = (() => {
+  const eur = x => (Number.isInteger(x) ? String(x) : x.toFixed(2).replace('.', ',')) + ' €';
+  const pc = x => `${N(x)}%`;
+  return function(l){
+    const E = [];
+    /* slot 1 */
+    if(l === 1){ const s = pick([25000, 50000, 100000]), c = rnd(2, 12), D = c*s/100000;
+      E.push({slot:1, type:'lock', title:'Il lucchetto della scala', q:`Il bosco dista ${N(D)} km dal laboratorio. Su una mappa in scala <b>1 : ${N(s)}</b>, quanti centimetri sono?`, ans:c, unit:'cm',
+        hint:['Trasformate i km in cm: 1 km = 100.000 cm.', `${N(D)} km = ${N(D*100000)} cm.`, `${N(D*100000)} : ${N(s)} = ${c} cm.`], sol:`${N(D*100000)} : ${N(s)} = ${c} cm`}); }
+    else if(l === 2){ const s = pick([10000, 20000, 25000, 50000, 100000, 200000]), c = rnd(2, 9), D = c*s/100000;
+      E.push({slot:1, type:'lock', title:'Il lucchetto della scala', q:`Su una mappa ${c} cm corrispondono a ${N(D)} km nella realtà. La scala è 1 : ? (il codice è il numero dopo i due punti)`, ans:s,
+        hint:['Trasformate i km in cm: 1 km = 100.000 cm.', `${N(D)} km = ${N(D*100000)} cm.`, `${N(D*100000)} : ${c} = ${N(s)}: scala 1 : ${N(s)}.`], sol:`1 : ${N(s)}`}); }
+    else { const s = pick([50, 100]), a = rnd(3, 9), b = rnd(3, 9), A = (a*s/100)*(b*s/100);
+      E.push({slot:1, type:'lock', title:'Il lucchetto della scala', q:`Sulla pianta in scala <b>1 : ${s}</b> il laboratorio è un rettangolo di ${a} cm × ${b} cm. Quanti <b>m²</b> misura davvero il pavimento?`, ans:A, unit:'m²',
+        hint:['Trasformate prima le lunghezze, poi calcolate l’area (attenzione: l’area non si moltiplica per la scala una volta sola!).', `${a} cm · ${s} = ${N(a*s/100)} m; ${b} cm · ${s} = ${N(b*s/100)} m.`, `${N(a*s/100)} · ${N(b*s/100)} = ${N(A)} m².`], sol:`${N(a*s/100)} m · ${N(b*s/100)} m = ${N(A)} m²`}); }
+    if(l === 1){ const [n, d] = pick([[1, 2], [1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 10], [3, 10], [7, 10], [9, 10], [1, 20]]), p = 100*n/d;
+      E.push({slot:1, type:'choice', title:'Le provette delle percentuali', q:`Quale percentuale è uguale a ${frac(n, d)}?`, opts:opts4(pc(p), [pc(n*10), pc(d*10), pc(n + d), pc(p + 10)], [pc(p*10), pc(p + 50)]),
+        hint:['Per passare a percentuale si cerca la frazione equivalente con denominatore 100.', `${frac(n, d)} = ${frac(p, 100)}.`, `È il ${p}%.`], sol:`${frac(n, d)} = ${p}%`}); }
+    else if(l === 2){ const A = pick([20, 40, 50, 80, 100, 200]), p = pick([10, 20, 25, 30, 40, 50, 75]), up = Math.random() < 0.5, B = up ? A + A*p/100 : A - A*p/100;
+      E.push({slot:1, type:'choice', title:'Le provette delle percentuali', q:`Il prezzo di un reagente è passato da ${eur(A)} a ${eur(B)}. Di che percentuale è ${up ? 'aumentato' : 'diminuito'}?`, opts:opts4(pc(p), [pc(Math.abs(B - A)), pc(Math.round(100*Math.abs(B - A)/B)), pc(p + 5), pc(p - 5), pc(p + 15)], [pc(p*2 + 10), pc(p*3 + 15)]),
+        hint:[`La variazione è ${eur(Math.abs(B - A))}.`, `Si confronta con il prezzo di partenza: ${N(Math.abs(B - A))} : ${A} = ${N(p/100)}.`, `${N(p/100)} = ${p}%.`], sol:`${N(Math.abs(B - A))} : ${A} = ${p}%`}); }
+    else { const p = pick([5, 10, 15, 20, 25, 30, 40, 60, 75]), X = 20*rnd(2, 25), v = p*X/100;
+      E.push({slot:1, type:'choice', title:'Le provette delle percentuali', q:`Il <b>${p}%</b> degli alunni della scuola, cioè ${N(v)} alunni, ha visitato il laboratorio. Quanti alunni ci sono in tutto?`, opts:nopts(X, [v*p/100 > 0 ? X + 20 : X + 10, Math.round(v*100/(100 - p))], v*p),
+        hint:[`${N(v)} alunni sono ${p} parti su 100.`, `1% = ${N(v)} : ${p} = ${N(v/p)} alunni.`, `100% = ${N(v/p)} · 100 = ${X} alunni.`], sol:`${N(v)} : ${p} · 100 = ${X}`}); }
+    /* slot 2 */
+    { let pairs, g = 0, h;
+      do { const seen = new Set(), right = new Set(); pairs = [];
+        while(pairs.length < 4 && seen.size < 40){ let L, Rv;
+          if(l === 1){ const [n, d] = pick([[1, 2], [1, 4], [3, 4], [1, 5], [2, 5], [3, 5], [4, 5], [1, 10], [3, 10], [7, 10], [1, 20], [1, 25]]); L = pc(100*n/d); Rv = frac(n, d); }
+          else if(l === 2){ const p = pick([10, 20, 25, 50, 75, 5, 30]), X = 20*rnd(1, 15); L = `${p}% di ${X}`; Rv = N(p*X/100); }
+          else { const a = rnd(2, 9), b = rnd(2, 9), k = rnd(2, 5), t = [a, b, a*k, b*k], i = rnd(0, 3); L = t.map((v, j) => j === i ? 'x' : v).join(' : ').replace(/ : (\S+) : /, ' : $1 = '); Rv = `x = ${t[i]}`; }
+          seen.add(L); if(!pairs.some(p => p[0] === L) && !right.has(Rv)){ right.add(Rv); pairs.push([L, Rv]); } }
+      } while(pairs.length < 4 && g++ < 100);
+      h = l === 1 ? ['Una percentuale è una frazione con denominatore 100.', 'Semplificate: per esempio 25% = 25/100 = 1/4.'] : l === 2 ? ['Il p% di un numero: dividete per 100 e moltiplicate per p.', '10% = un decimo, 25% = un quarto, 50% = la metà.'] : ['In una proporzione il prodotto dei medi è uguale al prodotto degli estremi.', 'x estremo: prodotto dei medi : altro estremo; x medio: prodotto degli estremi : altro medio.'];
+      E.push({slot:2, type:'match', title:'Lo schedario dei termini', q:l === 1 ? 'Abbinate ogni percentuale alla frazione equivalente.' : l === 2 ? 'Abbinate ogni calcolo al suo risultato.' : 'Abbinate ogni proporzione al valore di x.', pairs, hint:h.concat([pairs.map(p => `${p[0]} → ${plain(p[1])}`).join('; ') + '.']), sol:pairs.map(p => `${p[0]} → ${p[1]}`).join('; ')}); }
+    { let L0, p, q, h;
+      if(l === 1){ L0 = pick([4, 6, 8, 10]); p = pick([150, 200, 250, 300].filter(x => (L0*x) % 100 === 0)); q = `La figura è larga ${L0} cm. Regolate la fotocopiatrice per <b>ingrandirla</b> fino a ${N(L0*p/100)} cm.`; h = [`${N(L0*p/100)} cm diviso ${L0} cm dice quante volte diventa più grande.`, `${N(L0*p/100)} : ${L0} = ${N(p/100)}.`, `${N(p/100)} = ${p}%.`]; }
+      else if(l === 2){ L0 = pick([8, 12, 16, 20]); p = pick([25, 50, 75, 60, 40].filter(x => (L0*x) % 100 === 0)); q = `La figura è larga ${L0} cm. Regolate la fotocopiatrice per <b>ridurla</b> a ${N(L0*p/100)} cm.`; h = ['Rimpicciolire vuol dire usare una percentuale minore di 100%.', `${N(L0*p/100)} : ${L0} = ${N(p/100)}.`, `${N(p/100)} = ${p}%.`]; }
+      else { L0 = pick([4, 6, 8]); const f = pick([4, 9, 0.25]); p = Math.round(100*Math.sqrt(f)); q = `La figura è larga ${L0} cm. Regolate la fotocopiatrice in modo che l’<b>area</b> della copia sia ${f === 0.25 ? 'un quarto' : f === 4 ? 'il quadruplo' : 'nove volte'} di quella originale.`; h = ['Se le lunghezze si moltiplicano per k, l’area si moltiplica per k · k.', `Cercate k con k · k = ${N(f)}: k = ${N(Math.sqrt(f))}.`, `k = ${N(Math.sqrt(f))} = ${p}%.`]; }
+      const draw = v => { const s = Math.min(12, 130/L0), w = L0*s*v/100, w0 = L0*s; return `<svg viewBox="0 0 300 200"><rect x="20" y="${180 - w0*0.7}" width="${w0}" height="${w0*0.7}" fill="none" stroke="#5E6A82" stroke-width="2" stroke-dasharray="6 4"/><rect x="${20 + w0 + 14}" y="${(180 - w*0.7).toFixed(1)}" width="${w.toFixed(1)}" height="${(w*0.7).toFixed(1)}" fill="#CFD8DC" stroke="#455A64" stroke-width="3"/><text x="20" y="20" font-size="16" font-weight="800" fill="#18223A">copia: ${N(L0*v/100)} cm</text></svg>`; };
+      E.push({slot:2, type:'dial', title:'L’esperimento della fotocopiatrice', q, min:25, max:300, step:5, start:100, ans:p, fmt:v => `${v}%`, draw, wrong:v => `Con il ${v}% la copia è larga ${N(L0*v/100)} cm: non è quella giusta.`, hint:h, sol:`zoom al ${p}%`}); }
+    /* slot 3 */
+    { let clues, ans, h, sol;
+      if(l === 1){ let a, b; do { a = rnd(1, 5); b = rnd(2, 7); } while(a >= b); const k = rnd(3, 15), S = (a + b)*k; ans = b*k;
+        clues = [`Il professore lascia ${S} figurine da dividere tra Ada e Bea.`, `Vanno divise nel rapporto ${a} : ${b}.`, 'Ada prende la parte più piccola.', 'Il codice è il numero di figurine di Bea.'];
+        h = [`Le parti in tutto sono ${a} + ${b} = ${a + b}.`, `Una parte vale ${S} : ${a + b} = ${k}.`, `Bea: ${b} · ${k} = ${ans}.`]; sol = `${S} : ${a + b} · ${b} = ${ans}`; }
+      else if(l === 2){ const [a, b, c] = [rnd(1, 3), rnd(2, 5), rnd(4, 7)], k = rnd(3, 12), S = (a + b + c)*k; ans = b*k;
+        clues = [`Un premio di ${S} € va diviso fra tre squadre.`, `Le parti stanno nel rapporto ${a} : ${b} : ${c}.`, 'La seconda squadra è quella dei «Gechi».', 'Il codice è quanti euro ricevono i Gechi.'];
+        h = [`Le parti in tutto sono ${a} + ${b} + ${c} = ${a + b + c}.`, `Una parte vale ${S} : ${a + b + c} = ${k} €.`, `Gechi: ${b} · ${k} = ${ans} €.`]; sol = `${S} : ${a + b + c} · ${b} = ${ans} €`; }
+      else { let a, b; do { a = rnd(2, 6); b = rnd(2, 6); } while(a === b); const k = rnd(3, 12), S = (a + b)*k; ans = b*k;
+        clues = [`${S} caramelle vanno divise fra Carlo e Dora.`, 'Le parti devono essere inversamente proporzionali alle ore di ritardo.', `Carlo è arrivato con ${a} ore di ritardo, Dora con ${b}.`, 'Il codice è il numero di caramelle di Carlo.'];
+        h = [`Inversamente proporzionale a ${a} e ${b} vuol dire direttamente proporzionale a ${b} e ${a}.`, `Le parti sono ${b} + ${a} = ${a + b}: una parte vale ${S} : ${a + b} = ${k}.`, `Carlo: ${b} · ${k} = ${ans}.`]; sol = `Carlo ${b} · ${k} = ${ans}`; }
+      E.push({slot:3, type:'roles', title:'I biglietti della ripartizione', q:'Il professore ha lasciato le istruzioni per una divisione su quattro biglietti.', clues, ans, hint:h, sol}); }
+    { let q, reps, h, n = 2;
+      if(l === 1){ const B = pick([8, 10, 12]), m = pick([2, 3]), k = rnd(1, Math.floor(6/m)); reps = k*m; const A = B*m;
+        q = `La ruota grande ha ${A} denti e fa girare una ruota piccola con ${B} denti. La ruota grande fa <b>${k} ${k === 1 ? 'giro' : 'giri'}</b>: quanti giri fa la piccola? Toccate insieme gli ingranaggi una volta per ogni giro della piccola.`;
+        h = [`Ogni giro della ruota grande fa passare ${A} denti.`, `${A} : ${B} = ${m}: la piccola fa ${m} giri per ogni giro della grande.`, `${k} · ${m} = ${reps} giri.`]; }
+      else if(l === 2){ const [A, B] = pick([[15, 10], [12, 8], [18, 12], [25, 10], [20, 8], [10, 4], [9, 6]]), kk = B/gcd(A, B); reps = kk*A/B;
+        q = `La ruota grande ha ${A} denti, la piccola ${B}. La ruota grande fa <b>${kk} giri</b>: quanti giri fa la piccola? Toccate insieme gli ingranaggi una volta per ogni giro della piccola.`;
+        h = ['I denti che passano sono gli stessi per le due ruote.', `La grande fa passare ${kk} · ${A} = ${kk*A} denti.`, `${kk*A} : ${B} = ${reps} giri.`]; }
+      else { const C = pick([6, 8, 10]), m = pick([2, 3]), k = rnd(1, Math.floor(6/m)), A = C*m, B = pick([9, 14, 21, 25].filter(x => x !== A && x !== C)); reps = k*m; n = 3;
+        q = `Tre ruote in fila: A ha ${A} denti, B (in mezzo) ${B}, C ${C}. A fa <b>${k} ${k === 1 ? 'giro' : 'giri'}</b>: quanti giri fa C? Toccate insieme i tre ingranaggi una volta per ogni giro di C.`;
+        h = ['La ruota in mezzo passa i denti da A a C: il numero dei suoi denti non cambia il risultato!', `A fa passare ${k} · ${A} = ${k*A} denti, che arrivano tutti a C.`, `${k*A} : ${C} = ${reps} giri.`]; }
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi in proporzione', q, n, reps, hint:h, sol:`${reps} giri`}); }
+    return E;
+  };
+})();
+/* ---------- m3\more.js ---------- */
+/* ===================== VARIANTI IN PIÙ (more) · MATEMATICA 3ª ===================== */
+
+/* ---------- STATISTICA E PROBABILITÀ ---------- */
+ROOMS.probabilita.more = (() => {
+  const red = (n, d) => { const g = gcd(n, d) || 1; return [n/g, d/g]; };
+  const fr = (n, d) => { if(n === 0) return '0'; const [a, b] = red(n, d); return b === 1 ? N(a) : frac(a, b); };
+  const sumA = a => a.reduce((s, x) => s + x, 0);
+  const COLS = [['rosso', '#D6334C', 'rossi'], ['blu', '#2F6FDB', 'blu'], ['verde', '#1F9D63', 'verdi'], ['giallo', '#F2C94C', 'gialli']];
+  const part = (k, T) => { const a = Array(k).fill(1); for(let s = k; s < T; s++) a[rnd(0, k - 1)]++; return a; };
+  const spinner = cols => { const n = cols.length; let g = '';
+    cols.forEach((c, i) => { const a0 = (i*360/n - 90)*Math.PI/180, a1 = ((i + 1)*360/n - 90)*Math.PI/180;
+      g += `<path d="M110 110L${(110 + 90*Math.cos(a0)).toFixed(1)} ${(110 + 90*Math.sin(a0)).toFixed(1)}A90 90 0 0 1 ${(110 + 90*Math.cos(a1)).toFixed(1)} ${(110 + 90*Math.sin(a1)).toFixed(1)}z" fill="${c}" stroke="#fff" stroke-width="3"/>`; });
+    return `<svg viewBox="0 0 220 230"><circle cx="110" cy="110" r="94" fill="#fff" stroke="#5E6A82" stroke-width="4"/>${g}<circle cx="110" cy="110" r="9" fill="#18223A"/><path d="M110 110L110 40" stroke="#18223A" stroke-width="5" stroke-linecap="round"/><path d="M98 6h24l-12 16z" fill="#18223A"/></svg>`; };
+  const DIE = [['esce pari', 3], ['esce più di 4', 2], ['esce 6', 1], ['esce meno di 5', 4], ['non esce il 3', 5], ['esce meno di 7', 6], ['esce 7', 0], ['esce multiplo di 3', 2], ['esce 1', 1], ['esce dispari', 3], ['esce più di 1', 5], ['esce meno di 3', 2]];
+  return function(l){
+    const E = [];
+    /* slot 1: la ruota della fortuna */
+    { const n = l === 1 ? pick([4, 6, 8]) : pick([6, 8, 10, 12]), cnt = part(3, n), ci = rnd(0, 2), k = cnt[ci], cn = COLS[ci][0];
+      const cols = shuffle(cnt.flatMap((c, i) => Array(c).fill(COLS[i][1])));
+      let q, R, near, far, h2, h3, s;
+      if(l === 1){ q = `La ruota del professore è divisa in ${n} spicchi uguali. Qual è la probabilità che la freccia si fermi sul <b>${cn}</b>?`; R = fr(k, n); near = [fr(n - k, n), fr(k, n - k), fr(k + 1, n)]; far = [fr(1, n), N(k)]; h2 = `Gli spicchi ${COLS[ci][2]} sono ${k} su ${n}.`; h3 = `P = ${R}.`; s = `${k}/${n} = ${plain(R)}`; }
+      else if(l === 2){ q = `La ruota del professore è divisa in ${n} spicchi uguali. Qual è la probabilità che la freccia <b>NON</b> si fermi sul ${cn}?`; R = fr(n - k, n); near = [fr(k, n), fr(n - k, k), fr(1, n)]; far = [N(n - k), fr(n, k)]; h2 = `L'evento contrario ha probabilità ${fr(k, n)}: le due probabilità insieme fanno 1.`; h3 = `1 − ${fr(k, n)} = ${R}.`; s = `1 − ${plain(fr(k, n))} = ${plain(R)}`; }
+      else { q = `La ruota del professore è divisa in ${n} spicchi uguali. Si gira <b>due volte</b>: qual è la probabilità che esca il ${cn} tutte e due le volte?`; R = fr(k*k, n*n); near = [fr(2*k, n), fr(k, n), fr(k*(k - 1), n*(n - 1))]; far = [fr(k, n*n), fr(2*k, n*n)]; h2 = `Ogni giro è indipendente: P(${cn}) = ${fr(k, n)} ogni volta, e le probabilità si moltiplicano.`; h3 = `${fr(k, n)} · ${fr(k, n)} = ${R}.`; s = `${plain(fr(k, n))} · ${plain(fr(k, n))} = ${plain(R)}`; }
+      E.push({slot:1, type:'choice', title:'Le provette della ruota', q, fig:spinner(cols), opts:opts4(R, near, far),
+        hint:['Contate gli spicchi del colore che vi interessa: sono tutti uguali, quindi ugualmente probabili.', h2, h3], sol:s}); }
+    /* slot 1: il mazzo di carte */
+    { const SE = ['coppe', 'denari', 'bastoni', 'spade'], se = pick(SE), base = 'Il professore gioca con un mazzo di 40 carte napoletane: 4 semi (coppe, denari, bastoni, spade), ognuno con le carte da 1 (asso) a 10; le figure sono fante, cavallo e re.';
+      if(l < 3){ const EV = pick([[`una carta di ${se}`, 10, `Ogni seme ha 10 carte.`], ['un asso', 4, 'C\'è un asso per ogni seme.'], ['una figura (fante, cavallo o re)', 12, 'Le figure sono 3 per ogni seme: 3 · 4.'], [`il re di ${se}`, 1, 'C\'è un solo re per ogni seme.'], ['un 7', 4, 'C\'è un 7 per ogni seme.'], [`una carta di ${se} minore di 4`, 3, 'Sono l\'1, il 2 e il 3 di quel seme.'], ['una carta pari', 20, 'Le carte pari sono 2, 4, 6, 8, 10: cinque per ogni seme.']]);
+        const ans = l === 1 ? EV[1] : EV[1]*2.5;
+        E.push({slot:1, type:'lock', title:'Il lucchetto delle carte', q:`${base} Si pesca una carta a caso. ${l === 1 ? `Quanti sono i <b>casi favorevoli</b> all'evento «esce ${EV[0]}»?` : `Qual è la probabilità, <b>in percentuale</b>, che esca ${EV[0]}?`}`, ans, unit:l === 1 ? '' : '%',
+          hint:[l === 1 ? 'I casi favorevoli sono le carte che fanno verificare l\'evento.' : 'P = casi favorevoli : 40, poi · 100 per la percentuale.', EV[2], l === 1 ? `Sono ${EV[1]}.` : `${EV[1]} : 40 · 100 = ${N(ans)}%.`], sol:l === 1 ? `${EV[1]} casi favorevoli` : `${EV[1]}/40 = ${N(ans)}%`}); }
+      else { const EV = pick([['un asso oppure una carta di ' + se, 4, 10, 1], ['una figura oppure una carta di ' + se, 12, 10, 3], ['un 7 oppure una carta di ' + se, 4, 10, 1], ['una carta pari oppure una carta di ' + se, 20, 10, 5], ['un asso oppure un re', 4, 4, 0]]), f = EV[1] + EV[2] - EV[3], ans = f*2.5;
+        E.push({slot:1, type:'lock', title:'Il lucchetto delle carte', q:`${base} Si pesca una carta a caso. Qual è la probabilità, <b>in percentuale</b>, che esca ${EV[0]}?`, ans, unit:'%',
+          hint:['Contate le carte che vanno bene, ma attenzione a non contarne qualcuna due volte!', EV[3] ? `Sono ${EV[1]} + ${EV[2]}, ma ${EV[3]} ${EV[3] === 1 ? 'carta è contata' : 'carte sono contate'} due volte: gli eventi sono compatibili.` : 'I due eventi sono incompatibili: non c\'è nessuna carta contata due volte.', `${EV[1]} + ${EV[2]} − ${EV[3]} = ${f}; ${f} : 40 · 100 = ${N(ans)}%.`],
+          sol:`(${EV[1]} + ${EV[2]} − ${EV[3]}) : 40 = ${f}/40 = ${N(ans)}%`}); } }
+    /* slot 2: schedario delle probabilità */
+    { let pairs, q, h2;
+      if(l === 1){ const sel = []; for(const e of shuffle(DIE)){ if(sel.length >= 4) break; if(sel.every(x => x[1] !== e[1])) sel.push(e); }
+        pairs = sel.map(e => [e[0], fr(e[1], 6)]); q = 'Si lancia un dado. Abbinate ogni evento alla sua probabilità.'; h2 = 'Contate le facce favorevoli e dividete per 6, poi semplificate la frazione.'; }
+      else if(l === 2){ const cs = shuffle([1, 2, 3, 4, 5, 6, 7]).slice(0, 4), T = sumA(cs), C = ['rossa', 'blu', 'verde', 'gialla'];
+        pairs = C.map((c, i) => [`pallina ${c}`, fr(cs[i], T)]); const pl = (k, s, p) => `${k} ${k === 1 ? 'pallina ' + s : 'palline ' + p}`; q = `Nell'urna ci sono ${pl(cs[0], 'rossa', 'rosse')}, ${pl(cs[1], 'blu', 'blu')}, ${pl(cs[2], 'verde', 'verdi')} e ${pl(cs[3], 'gialla', 'gialle')}. Abbinate ogni estrazione alla sua probabilità.`; h2 = `Le palline sono ${T} in tutto: P = palline di quel colore : ${T}, poi semplificate.`; }
+      else { const sums = shuffle([2, 3, 4, 5, 6, 7]).slice(0, 4).sort((a, b) => a - b);
+        pairs = sums.map(s => [`somma ${s}`, fr(s - 1, 36)]); q = 'Si lanciano due dadi. Abbinate ogni somma alla sua probabilità.'; h2 = 'I casi possibili sono 36. Per la somma s (da 2 a 7) le coppie favorevoli sono s − 1: per esempio la somma 4 si ottiene con (1,3), (2,2), (3,1).'; }
+      E.push({slot:2, type:'match', title:'Lo schedario delle probabilità', q, pairs,
+        hint:['Probabilità = casi favorevoli : casi possibili.', h2, pairs.map(p => `${p[0]}: ${plain(p[1])}`).join('; ') + '.'], sol:pairs.map(p => `${p[0]} → ${plain(p[1])}`).join('; ')}); }
+    /* slot 2: l'esperimento della media */
+    { const n = l + 3; let M, known, ans;
+      for(;;){ M = l === 3 ? pick([6.5, 7, 7.5, 8]) : rnd(6, 8); known = Array.from({length:n - 1}, () => rnd(4, 10)); ans = n*M - sumA(known); if(Number.isInteger(ans) && ans >= 3 && ans <= 10) break; }
+      const draw = v => { const all = known.concat([v]), m = sumA(all)/n, W = 300/n, Y = x => 190 - x*16; let g = '';
+        for(let i = 0; i <= 10; i += 2) g += `<path d="M30 ${Y(i)}H320" stroke="#D5DCE8" stroke-width="1.5"/><text x="24" y="${Y(i) + 5}" text-anchor="end" font-size="13" font-weight="700" fill="#5E6A82">${i}</text>`;
+        all.forEach((x, i) => { g += `<rect x="${30 + i*W + W*0.2}" y="${Y(x)}" width="${W*0.6}" height="${x*16}" fill="${i === n - 1 ? '#E8A33D' : '#5D8A1E'}"/><text x="${30 + (i + 0.5)*W}" y="208" text-anchor="middle" font-size="13" font-weight="800" fill="#18223A">${i === n - 1 ? '?' : (i + 1) + 'ª'}</text>`; });
+        return `<svg viewBox="0 0 330 240">${g}<path d="M30 ${Y(m)}H320" stroke="#D6334C" stroke-width="3" stroke-dasharray="8 5"/><text x="320" y="232" text-anchor="end" font-size="15" font-weight="800" fill="#D6334C">media: ${N(m)}</text></svg>`; };
+      E.push({slot:2, type:'dial', title:'L\'esperimento della media', q:`Nelle prime ${n - 1} verifiche Luca ha preso: ${known.join(', ')}. Quale voto deve prendere nell'ultima verifica per avere la media di <b>${N(M)}</b>?`, min:0, max:10, step:1, start:0, ans,
+        fmt:v => `ultimo voto: ${v}`, draw, wrong:v => `Con ${v} la media sarebbe ${N((sumA(known) + v)/n)}.`,
+        hint:[`Con ${n} voti e media ${N(M)} la somma di tutti i voti deve essere ${n} · ${N(M)} = ${N(n*M)}.`, `I voti che ha già sommano ${sumA(known)}.`, `${N(n*M)} − ${sumA(known)} = ${ans}.`], sol:`${N(n*M)} − ${sumA(known)} = ${ans}`}); }
+    /* slot 3: l'albero delle probabilità */
+    { let st, end, notes, s;
+      const tc = () => pick(['testa', 'croce']);
+      if(l === 1){ const a = tc(), b = tc(); st = [`1ª moneta: ${a}`, `2ª moneta: ${b}`]; end = 'P = 1/2 · 1/2 = 1/4'; notes = ['probabilità 1/2', 'ancora 1/2: lungo un ramo dell\'albero le probabilità si moltiplicano']; s = `${a} e poi ${b}: 1/4`; }
+      else if(l === 2){ const a = tc(), d = rnd(1, 6); st = [`moneta: ${a}`, `dado: ${d}`]; end = 'P = 1/2 · 1/6 = 1/12'; notes = ['probabilità 1/2', 'probabilità 1/6: in tutto 1/2 · 1/6']; s = `${a} e ${d}: 1/12`; }
+      else if(Math.random() < 0.5){ const a = tc(), b = tc(), c = tc(); st = [`1ª moneta: ${a}`, `2ª moneta: ${b}`, `3ª moneta: ${c}`]; end = 'P = 1/8'; notes = ['probabilità 1/2', 'finora 1/2 · 1/2 = 1/4', 'in tutto 1/4 · 1/2 = 1/8: i casi possibili sono 2 · 2 · 2 = 8']; s = `${a}, ${b}, ${c}: 1/8`; }
+      else { const a = rnd(1, 6), b = rnd(1, 6); st = [`1° dado: ${a}`, `2° dado: ${b}`]; end = 'P = 1/6 · 1/6 = 1/36'; notes = ['probabilità 1/6', 'ancora 1/6: in tutto 1/36, perché i casi possibili sono 6 · 6 = 36']; s = `${a} e poi ${b}: 1/36`; }
+      E.push({slot:3, type:'path', title:'L\'albero delle probabilità', q:'Seguite un ramo dell\'albero delle probabilità fino all\'esito finale: a ogni tappa la probabilità si moltiplica.', sprite:'molecola', what:'il segnalino', start:'inizio', stations:st, end, notes,
+        hint:['Muovete il dito lentamente, al centro del percorso.', 'Se il segnalino esce, riparte dall\'ultima tappa raggiunta.', 'Lungo un ramo dell\'albero le probabilità si moltiplicano: leggete le note a ogni tappa.'], sol:s}); }
+    /* slot 3: gli ingranaggi della ruota */
+    { const n = l === 1 ? 2 : 3, k = pick([4, 6, 8, 10]);
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi della ruota della fortuna', q:`La ruota della fortuna del professore (${k} spicchi uguali, ognuno con probabilità ${frac(1, k)}) è bloccata: fate girare gli ingranaggi tutti insieme!`, n, reps:l + 2,
+        hint:['Una persona conta «tre, due, uno, ora!».', 'Toccate tutti nello stesso istante, non uno dopo l\'altro.', 'Se non funziona, rallentate e riprovate insieme.'], sol:`${n} ingranaggi toccati insieme per ${l + 2} volte`}); }
+    return E;
+  };
+})();
+
+/* ---------- CIRCONFERENZA E CERCHIO ---------- */
+ROOMS.cerchio.more = (() => {
+  const P = 3.14, COL = '#D4572A';
+  const r2 = x => Math.round(x*100)/100, r1 = x => Math.round(x*10)/10;
+  const piA = (v, ve) => ({ans:r2(v), alts:[r1(v), r2(ve), r1(ve)], tol:0.006});
+  const T = (x, y, s, sz) => `<text x="${x}" y="${y}" text-anchor="middle" font-size="${sz || 16}" font-weight="800" fill="#18223A">${s}</text>`;
+  const pt = (a, R) => [110 + (R || 80)*Math.cos(a*Math.PI/180), 110 - (R || 80)*Math.sin(a*Math.PI/180)];
+  const TRI = [[3, 4, 5], [6, 8, 10], [5, 12, 13], [9, 12, 15], [8, 15, 17], [12, 16, 20]];
+  const sector = al => { const [x, y] = pt(al);
+    return `<svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="80" fill="#fff" stroke="#5E6A82" stroke-width="3"/>${al >= 360 ? '<circle cx="110" cy="110" r="80" fill="#F2A07B"/>' : al > 0 ? `<path d="M110 110L190 110A80 80 0 ${al > 180 ? 1 : 0} 0 ${x.toFixed(1)} ${y.toFixed(1)}z" fill="#F2A07B" stroke="${COL}" stroke-width="3"/>` : ''}<circle cx="110" cy="110" r="3.5" fill="#18223A"/></svg>`; };
+  const poly = n => { const ps = Array.from({length:n}, (_, i) => pt(90 + i*360/n).map(v => v.toFixed(1)).join(' '));
+    return `<svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="80" fill="#FBE5DA" stroke="${COL}" stroke-width="3"/><path d="M${ps.join('L')}z" fill="#F2A07B" fill-opacity=".6" stroke="#18223A" stroke-width="3"/><path d="M110 110L${ps[0]}M110 110L${ps[1]}" stroke="#2F6FDB" stroke-width="2.5"/><circle cx="110" cy="110" r="3.5" fill="#18223A"/>${T(110, 214, n + ' lati', 15)}</svg>`; };
+  return function(l){
+    const E = [];
+    /* slot 1: il contagiri */
+    if(l === 1){ const D = pick([50, 100]), n = pick([10, 20, 50, 100]), C = P*D/100, dist = C*n;
+      E.push({slot:1, type:'lock', title:'Il contagiri della ruota', q:`Una ruota con il diametro di ${D} cm ha percorso ${N(dist)} m. Quanti <b>giri</b> ha fatto? (π ≈ 3,14)`, ans:n, tol:0.2,
+        hint:['A ogni giro la ruota avanza di una circonferenza.', `Circonferenza = 3,14 · ${D} = ${N(P*D)} cm = ${N(C)} m.`, `${N(dist)} : ${N(C)} = ${n} giri.`], sol:`${N(dist)} m : ${N(C)} m = ${n} giri`}); }
+    else if(l === 2){ const r = rnd(5, 12), t = pick([10, 15, 20, 30, 45]), arc = 2*P*r*t/60;
+      E.push(Object.assign({slot:1, type:'lock', title:'Il contagiri dell\'orologio', q:`La lancetta dei minuti dell'orologio del laboratorio è lunga ${r} cm. Quanti centimetri percorre la sua punta in <b>${t} minuti</b>? (π ≈ 3,14)`, unit:'cm',
+        hint:['In 60 minuti la punta fa un giro completo: percorre una circonferenza intera.', `Circonferenza = 2 · 3,14 · ${r} = ${N(2*P*r)} cm; ${t} minuti sono ${frac(t/gcd(t, 60), 60/gcd(t, 60))} di giro.`, `${N(2*P*r)} · ${t} : 60 = ${N(arc)} cm.`], sol:`${N(2*P*r)} · ${t}/60 = ${N(arc)} cm`}, piA(arc, 2*Math.PI*r*t/60))); }
+    else { const r = rnd(2, 6), k = rnd(2, 4), R = r*k, n = rnd(2, 9);
+      E.push({slot:1, type:'lock', title:'Il contagiri degli ingranaggi', q:`Due ruote dentate si toccano: la grande ha raggio ${R} cm, la piccola ${r} cm. Quando la grande fa <b>${n} giri</b>, quanti giri fa la piccola?`, ans:n*k,
+        hint:['I denti che passano sono gli stessi per le due ruote: la strada percorsa dal bordo è uguale.', `La circonferenza della grande è ${k} volte quella della piccola (${R} : ${r} = ${k}).`, `${n} · ${k} = ${n*k} giri.`], sol:`${n} · ${R}/${r} = ${n*k} giri`}); }
+    /* slot 1: provette di corde e tangenti */
+    if(l === 1){ const Q = pick([
+        ['Che cos\'è il numero π?', 'il rapporto tra circonferenza e diametro', ['il rapporto tra area e raggio', 'il doppio del raggio'], 'un angolo di 180°', 'Dividendo la lunghezza di qualsiasi circonferenza per il suo diametro si ottiene sempre lo stesso numero.', 'Quel numero vale circa 3,14.'],
+        ['Qual è la corda più lunga di una circonferenza?', 'il diametro', ['il raggio', 'l\'arco'], 'la tangente', 'Una corda unisce due punti della circonferenza.', 'La più lunga passa per il centro.'],
+        ['Come si chiama una retta che tocca la circonferenza in un solo punto?', 'tangente', ['secante', 'esterna'], 'diametro', 'La secante la taglia in due punti; quella esterna non la tocca.', 'Il nome viene dal latino «tangere», toccare.'],
+        ['Quanto misura un angolo alla circonferenza che insiste su una semicirconferenza?', '90°', ['180°', '45°'], '360°', 'L\'angolo al centro corrispondente è un angolo piatto (180°).', 'L\'angolo alla circonferenza è la metà: un angolo retto.'],
+        ['La tangente in un punto della circonferenza è sempre…', 'perpendicolare al raggio in quel punto', ['parallela al raggio in quel punto', 'uguale al diametro'], 'lunga quanto l\'arco', 'Disegnate il raggio fino al punto di contatto.', 'Raggio e tangente formano un angolo retto.']]);
+      E.push({slot:1, type:'choice', title:'Le provette della corda', q:Q[0], opts:opts4(Q[1], Q[2], Q[3]), hint:[Q[4], Q[5], `La risposta è: ${Q[1]}.`], sol:Q[1]}); }
+    else if(l === 2){ const [a, b, c] = pick(TRI), y = 110 - 80*a/c;
+      const fig = `<svg viewBox="0 0 220 220"><circle cx="110" cy="110" r="80" fill="#FBE5DA" stroke="${COL}" stroke-width="3"/><path d="M${(110 - 80*b/c).toFixed(1)} ${y.toFixed(1)}H${(110 + 80*b/c).toFixed(1)}" stroke="#18223A" stroke-width="3"/><path d="M110 110V${y.toFixed(1)}" stroke="#2F6FDB" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M110 110L${(110 + 80*b/c).toFixed(1)} ${y.toFixed(1)}" stroke="${COL}" stroke-width="2.5"/><circle cx="110" cy="110" r="3.5" fill="#18223A"/>${T(100, (110 + y)/2 + 6, a, 14)}${T(110 + 40*b/c + 14, (110 + y)/2 + 14, c, 14)}</svg>`;
+      E.push({slot:1, type:'choice', title:'Le provette della corda', q:`Una circonferenza ha raggio ${c} cm. Una corda dista ${a} cm dal centro. Quanto è lunga la <b>corda</b>?`, fig, opts:nopts(2*b, [b, 2*a, c + a], c*c).map(o => ({h:o.h + ' cm', ok:o.ok})),
+        hint:['La distanza dal centro cade a metà della corda e forma un triangolo rettangolo con il raggio.', `Metà corda = √(${c}² − ${a}²) = √(${c*c} − ${a*a}) = √${b*b} = ${b} cm.`, `La corda è ${b} · 2 = ${2*b} cm.`], sol:`metà corda = √(${c*c} − ${a*a}) = ${b}; corda = ${2*b} cm`}); }
+    else { const [a, b, c] = pick(TRI);
+      const fig = `<svg viewBox="0 0 260 200"><circle cx="80" cy="100" r="60" fill="#FBE5DA" stroke="${COL}" stroke-width="3"/><circle cx="80" cy="100" r="3.5" fill="#18223A"/><path d="M80 100L${(80 + 60*a/c).toFixed(1)} ${(100 - 60*b/c).toFixed(1)}L${(80 + 60*c/a).toFixed(1)} 100z" fill="none" stroke="#18223A" stroke-width="2.5"/>${T(60, 95, 'O', 14)}${T((80 + 60*c/a).toFixed(1), 120, 'P', 14)}</svg>`;
+      E.push({slot:1, type:'choice', title:'Le provette della tangente', q:`Da un punto P, che dista ${c} cm dal centro O di una circonferenza di raggio ${a} cm, si traccia una retta <b>tangente</b>. Quanto è lungo il segmento di tangente da P al punto di contatto?`, fig, opts:nopts(b, [c - a, c + a, a + b - 1], c*a).map(o => ({h:o.h + ' cm', ok:o.ok})),
+        hint:['Il raggio che arriva al punto di contatto è perpendicolare alla tangente: si forma un triangolo rettangolo.', `L'ipotenusa è OP = ${c} cm, un cateto è il raggio ${a} cm.`, `√(${c*c} − ${a*a}) = √${b*b} = ${b} cm.`], sol:`√(${c}² − ${a}²) = ${b} cm`}); }
+    /* slot 2: la lente sulle rette */
+    if(l === 1){ const r = rnd(3, 8), okV = shuffle(Array.from({length:2*r}, (_, i) => i + 1)).slice(0, 3), noV = shuffle(Array.from({length:10}, (_, i) => 2*r + 1 + i)).slice(0, 4);
+      E.push({slot:2, type:'find', title:'La lente sulle corde', q:`Un cerchio ha raggio ${r} cm. Tocca le corde che si possono <b>davvero</b> disegnare dentro questo cerchio.`, items:okV.map(v => ({h:`corda di ${v} cm`, ok:true})).concat(noV.map(v => ({h:`corda di ${v} cm`}))),
+        why:() => `No: la corda più lunga è il diametro, che misura ${2*r} cm.`,
+        hint:['La corda più lunga di tutte è il diametro.', `Il diametro è ${r} · 2 = ${2*r} cm.`, `Vanno bene le corde fino a ${2*r} cm: ${okV.sort((x, y) => x - y).join(', ')} cm.`], sol:`corde possibili (≤ ${2*r} cm): ${okV.join(', ')} cm`}); }
+    else if(l === 2){ const r = rnd(5, 9), sec = Math.random() < 0.5, pool = Array.from({length:2*r}, (_, i) => i + 1);
+      const ok = shuffle(pool.filter(d => sec ? d < r : d > r)).slice(0, 3), no = shuffle(pool.filter(d => sec ? d > r : d < r)).slice(0, 3).concat([r]);
+      const kind = d => d < r ? 'secante' : d === r ? 'tangente' : 'esterna';
+      E.push({slot:2, type:'find', title:'La lente sulle rette', q:`Una circonferenza ha raggio ${r} cm. Ogni cartellino dà la distanza di una retta dal centro: tocca le rette <b>${sec ? 'secanti' : 'esterne'}</b>.`, items:ok.map(d => ({h:`d = ${d} cm`, ok:true})).concat(no.map(d => ({h:`d = ${d} cm`, k:kind(d)}))),
+        why:it => `No: questa retta è ${it.k}.`,
+        hint:['Confrontate la distanza della retta dal centro con il raggio.', `Distanza minore del raggio: secante; uguale: tangente; maggiore: esterna.`, `Quelle giuste: ${ok.map(d => 'd = ' + d).join(', ')}.`], sol:`${sec ? 'secanti' : 'esterne'} (r = ${r}): ${ok.map(d => 'd = ' + d + ' cm').join(', ')}`}); }
+    else { const seen = new Set(), ok = [], no = [];
+      const kind = (a, b, d) => d > a + b ? 'esterne' : d === a + b ? 'tangenti esternamente' : d > Math.abs(a - b) ? 'secanti' : d === Math.abs(a - b) ? 'tangenti internamente' : 'una interna all\'altra';
+      for(let t = 0; t < 500 && (ok.length < 3 || no.length < 4); t++){ const a = rnd(2, 9), b = rnd(2, 9), d = rnd(1, 18), h = `r = ${Math.max(a, b)} e ${Math.min(a, b)}; d = ${d}`;
+        if(a === b || seen.has(h)) continue; const k = kind(a, b, d);
+        if(k === 'secanti' && ok.length < 3){ seen.add(h); ok.push({h, ok:true}); } else if(k !== 'secanti' && no.length < 4 && !no.some(x => x.k === k)){ seen.add(h); no.push({h, k}); } }
+      E.push({slot:2, type:'find', title:'La lente sulle circonferenze', q:'Ogni cartellino descrive due circonferenze: i due raggi e la distanza d tra i centri (in cm). Tocca le coppie di circonferenze <b>secanti</b>.', items:ok.concat(no),
+        why:it => `No: queste circonferenze sono ${it.k}.`,
+        hint:['Due circonferenze sono secanti se la distanza dei centri è minore della somma dei raggi e maggiore della loro differenza.', 'Per ogni cartellino calcolate somma e differenza dei raggi e confrontatele con d.', `Quelle secanti: ${ok.map(x => x.h).join('; ')}.`], sol:`secanti: ${ok.map(x => x.h).join('; ')}`}); }
+    /* slot 2: esperimenti */
+    if(l === 1){ const d = rnd(2, 10), ans = r2(P*d);
+      E.push({slot:2, type:'dial', title:'L\'esperimento del filo', q:`Il professore vuole avvolgere un filo intorno a un disco con il <b>diametro di ${d} cm</b>, senza avanzi. Regolate la lunghezza del filo (π ≈ 3,14).`, min:0, max:35, step:0.1, start:0, ans, tol:0.06,
+        fmt:v => `filo: ${N(v)} cm`, draw:v => `<svg viewBox="0 0 260 200"><circle cx="70" cy="90" r="${d*5}" fill="#FBE5DA" stroke="${COL}" stroke-width="3"/><path d="M${70 - d*5} 90H${70 + d*5}" stroke="#18223A" stroke-width="2"/><path d="M10 180H${10 + v*7}" stroke="#2F6FDB" stroke-width="6" stroke-linecap="round"/>${T(70, 90 - d*5 - 8 < 14 ? 14 : 90 - d*5 - 8, d + ' cm', 13)}</svg>`,
+        wrong:v => `Il filo è lungo ${N(v)} cm: non avvolge il disco esattamente.`,
+        hint:['Il filo deve essere lungo quanto la circonferenza.', 'C = π · d.', `3,14 · ${d} = ${N(ans)} cm.`], sol:`C = 3,14 · ${d} = ${N(ans)} cm`}); }
+    else if(l === 2){ let a, r; do { a = 15*rnd(1, 23); r = rnd(2, 12); } while((2*r*a) % 360); const L = 2*P*r*a/360;
+      E.push({slot:2, type:'dial', title:'L\'esperimento dell\'arco', q:`In una circonferenza di raggio ${r} cm il professore vuole un arco lungo <b>${N(L)} cm</b>. Regolate l'angolo al centro (π ≈ 3,14).`, min:0, max:360, step:15, start:0, ans:a,
+        fmt:v => `${v}°`, draw:sector,
+        hint:[`La circonferenza intera è lunga 2 · 3,14 · ${r} = ${N(2*P*r)} cm e corrisponde a 360°.`, `L'arco è la parte ${N(L)} : ${N(2*P*r)} della circonferenza.`, `360° · ${N(L)} : ${N(2*P*r)} = ${a}°.`], sol:`${N(L)}/${N(2*P*r)} · 360° = ${a}°`}); }
+    else { const n = pick([4, 5, 6, 8, 9, 10, 12]), a = 360/n;
+      E.push({slot:2, type:'dial', title:'L\'esperimento del poligono', q:`Il professore vuole un poligono regolare inscritto in cui ogni lato corrisponde a un <b>angolo al centro di ${a}°</b>. Regolate il numero dei lati.`, min:3, max:12, step:1, start:3, ans:n,
+        fmt:v => `${v} lati`, draw:poly, wrong:v => `Con ${v} lati l'angolo al centro è ${N(360/v)}°.`,
+        hint:['Gli angoli al centro di un poligono regolare sono tutti uguali e insieme fanno 360°.', 'Numero dei lati = 360° : angolo al centro.', `360 : ${a} = ${n} lati.`], sol:`360 : ${a} = ${n} lati`}); }
+    /* slot 3: il percorso del calcolo */
+    { const r = l === 3 ? pick([2, 3, 4, 6, 8, 9]) : rnd(2, 9); let st, end, notes, s;
+      if(l === 1){ st = [`d = ${2*r} cm`, `3,14 · ${2*r}`]; end = `C = ${N(P*2*r)} cm`; notes = ['il diametro è il doppio del raggio', 'C = π · d']; s = `C = 3,14 · ${2*r} = ${N(P*2*r)} cm`; }
+      else if(l === 2){ st = [`r² = ${r*r}`, `3,14 · ${r*r}`]; end = `A = ${N(P*r*r)} cm²`; notes = ['prima il raggio al quadrato', 'poi per π: A = π · r²']; s = `A = 3,14 · ${r*r} = ${N(P*r*r)} cm²`; }
+      else { let a = pick([30, 45, 60, 90, 120, 180]); while((r*r*a) % 360) a = pick([30, 45, 60, 90, 120, 180]); const A = P*r*r; st = [`r² = ${r*r}`, `A = ${N(A)} cm²`, `· ${a} : 360`]; end = `settore = ${N(A*a/360)} cm²`; notes = ['il raggio al quadrato', 'area del cerchio intero: π · r²', `il settore è la parte ${a}/360 del cerchio`]; s = `${N(A)} · ${a}/360 = ${N(A*a/360)} cm²`; }
+      E.push({slot:3, type:'path', title:'L\'orbita del calcolo', q:`Accompagnate la cometa lungo i passaggi del calcolo, partendo da un cerchio di raggio ${r} cm (π ≈ 3,14).`, sprite:'cometa', what:'la cometa', start:`r = ${r} cm`, stations:st, end, notes,
+        hint:['Muovete il dito lentamente, restando al centro del percorso.', 'Se la cometa esce, riparte dall\'ultima tappa raggiunta.', 'A ogni tappa leggete il passaggio: è il procedimento del calcolo.'], sol:s}); }
+    /* slot 3: il ritmo del telescopio */
+    { const ang = pick([10, 15, 20, 30, 45]), bpm = pick([60, 66, 72, 80]);
+      E.push({slot:3, type:'rhythm', title:'Il ritmo del telescopio', q:`Il telescopio ruota di ${ang}° a ogni scatto: per fare un giro completo servono 360 : ${ang} = ${360/ang} scatti. Date gli scatti a ritmo!`, theme:'ingranaggio', bpm, need:[0, 8, 9, 10][l], two:l === 3,
+        hint:['Guardate l\'anello: toccate quando si chiude sul bersaglio.', 'Non toccate troppo presto: aspettate il momento giusto.', 'Una persona può contare ad alta voce il ritmo per tutti.'], sol:`${360/ang} scatti da ${ang}° fanno un giro completo`}); }
+    return E;
+  };
+})();
+
+/* ---------- CALCOLO LETTERALE ---------- */
+ROOMS.letterale.more = (() => {
+  const sp = e => e === 1 ? '' : `<sup>${e}</sup>`;
+  const lit = o => Object.keys(o).sort().filter(k => o[k] > 0).map(k => k + sp(o[k])).join('');
+  const mono = (c, o = {}) => { const L = lit(o); if(!L) return N(c); if(c === 1) return L; if(c === -1) return '−' + L; return N(c) + L; };
+  const sum = ts => ts.filter(t => t[0] !== 0).map(([c, o], i) => { const m = mono(Math.abs(c), o); return i === 0 ? (c < 0 ? '−' + m : m) : (c < 0 ? ' − ' : ' + ') + m; }).join('') || '0';
+  const pn = x => x < 0 ? `(${N(x)})` : N(x);
+  return function(l){
+    const E = [];
+    /* slot 1: il recinto */
+    if(l === 1){ const a = rnd(2, 12), b = rnd(2, 12);
+      E.push({slot:1, type:'lock', title:'Il lucchetto del recinto', q:`Il recinto rettangolare dell'orto ha i lati lunghi <i>a</i> e <i>b</i>: il suo perimetro è <b>2a + 2b</b>. Quanto misura il perimetro se a = ${a} m e b = ${b} m?`, ans:2*a + 2*b, unit:'m',
+        fig:`<svg viewBox="0 0 220 130"><rect x="30" y="20" width="160" height="80" fill="#F3E6F7" stroke="#9C3FB0" stroke-width="4"/><text x="110" y="122" text-anchor="middle" font-size="18" font-weight="800" fill="#18223A">a</text><text x="18" y="66" text-anchor="middle" font-size="18" font-weight="800" fill="#18223A">b</text></svg>`,
+        hint:['2a vuol dire 2 · a.', `2 · ${a} + 2 · ${b}.`, `${2*a} + ${2*b} = ${2*a + 2*b} m.`], sol:`2 · ${a} + 2 · ${b} = ${2*a + 2*b} m`}); }
+    else if(l === 2){ let x, k, m; do { x = rnd(3, 12); k = rnd(1, 6); m = rnd(1, 5); } while(2*x - m <= 0);
+      const P = 4*x + k - m;
+      E.push({slot:1, type:'lock', title:'Il lucchetto del recinto', q:`Un recinto triangolare ha i lati lunghi <b>x</b>, <b>x + ${k}</b> e <b>2x − ${m}</b> (in metri). Scrivete il perimetro in forma ridotta e calcolatelo per x = ${x}.`, ans:P, unit:'m',
+        hint:['Il perimetro è la somma dei tre lati: sommate i monomi simili.', `x + x + ${k} + 2x − ${m} = ${sum([[4, {x:1}], [k - m, {}]])}.`, `4 · ${x} ${k - m < 0 ? '−' : '+'} ${Math.abs(k - m)} = ${P} m.`], sol:`${sum([[4, {x:1}], [k - m, {}]])} = ${P} m`}); }
+    else { const x = rnd(2, 12), k = rnd(1, 6), useSq = Math.random() < 0.5 || x <= k, AA = useSq ? (x + k)**2 : x*x - k*k;
+      E.push({slot:1, type:'lock', title:'Il lucchetto del recinto', q:useSq ? `Un recinto quadrato ha il lato lungo <b>x + ${k}</b> metri. La sua area è (x + ${k})<sup>2</sup> = x<sup>2</sup> + ${2*k}x + ${k*k}. Quanto vale l'area per x = ${x}?` : `Un recinto rettangolare ha i lati lunghi <b>x + ${k}</b> e <b>x − ${k}</b> metri. La sua area è (x + ${k})(x − ${k}) = x<sup>2</sup> − ${k*k}. Quanto vale l'area per x = ${x}?`, ans:AA, unit:'m²',
+        hint:['Potete sostituire nella forma che preferite: il risultato è lo stesso.', useSq ? `${x}<sup>2</sup> + ${2*k} · ${x} + ${k*k} = ${x*x} + ${2*k*x} + ${k*k}.` : `${x}<sup>2</sup> − ${k*k} = ${x*x} − ${k*k}.`, `L'area è ${AA} m².`], sol:useSq ? `(${x} + ${k})² = ${AA} m²` : `${x}² − ${k*k} = ${AA} m²`}); }
+    /* slot 1: la traduzione */
+    { const POOL = l === 1 ? [
+        ['il doppio di un numero n, aumentato di 5', '2n + 5', ['2(n + 5)', 'n + 2 + 5'], 'n<sup>2</sup> + 5'],
+        ['il triplo di un numero n, diminuito di 4', '3n − 4', ['3(n − 4)', 'n − 3 − 4'], 'n<sup>3</sup> − 4'],
+        ['la metà di un numero n, aumentata di 1', 'n : 2 + 1', ['(n + 1) : 2', '2n + 1'], 'n − 2 + 1'],
+        ['il numero che viene dopo n (il successivo)', 'n + 1', ['n − 1', '2n'], 'n<sup>2</sup>'],
+        ['un numero n moltiplicato per sé stesso', 'n<sup>2</sup>', ['2n', 'n + n'], 'n<sup>3</sup>']]
+      : l === 2 ? [
+        ['il quadrato della somma di a e b', '(a + b)<sup>2</sup>', ['a<sup>2</sup> + b<sup>2</sup>', '2(a + b)'], 'a + b<sup>2</sup>'],
+        ['la somma dei quadrati di a e b', 'a<sup>2</sup> + b<sup>2</sup>', ['(a + b)<sup>2</sup>', '2a + 2b'], 'ab<sup>2</sup>'],
+        ['il doppio prodotto di a e b', '2ab', ['a<sup>2</sup>b<sup>2</sup>', '2a + 2b'], 'a + b + 2'],
+        ['il prodotto della somma di a e b per la loro differenza', '(a + b)(a − b)', ['(a + b) + (a − b)', '(a + b)<sup>2</sup>'], 'a<sup>2</sup> + b<sup>2</sup>'],
+        ['il cubo della differenza tra a e b', '(a − b)<sup>3</sup>', ['a<sup>3</sup> − b<sup>3</sup>', '3(a − b)'], 'a − b<sup>3</sup>']]
+      : [
+        ['l\'area di un quadrato di lato a + 3', '(a + 3)<sup>2</sup>', ['a<sup>2</sup> + 3', '4(a + 3)'], '4a + 3'],
+        ['il perimetro di un rettangolo con base 2a e altezza a − 1', '6a − 2', ['2a(a − 1)', '3a − 1'], '6a + 2'],
+        ['la somma di tre numeri consecutivi, se il primo è n', '3n + 3', ['3n', 'n + 3'], 'n<sup>3</sup>'],
+        ['il volume di un cubo di spigolo 2a', '8a<sup>3</sup>', ['2a<sup>3</sup>', '6a<sup>3</sup>'], '8a'],
+        ['la differenza tra il quadrato di a e il quadrato di b', 'a<sup>2</sup> − b<sup>2</sup>', ['(a − b)<sup>2</sup>', '2a − 2b'], 'a − b<sup>2</sup>']];
+      const Q = pick(POOL);
+      E.push({slot:1, type:'choice', title:'Le provette della traduzione', q:`Quale espressione traduce la frase: «<b>${Q[0]}</b>»?`, opts:opts4(Q[1], Q[2], Q[3]),
+        hint:['Leggete la frase con calma: l\'ordine delle parole dice l\'ordine delle operazioni.', l === 1 ? 'Le parentesi servono solo se un\'operazione va fatta prima: «il doppio di (n + 5)» è diverso da «il doppio di n, aumentato di 5».' : 'Attenzione: «il quadrato della somma» è diverso da «la somma dei quadrati».', `È ${Q[1]}.`], sol:`${Q[0]} → ${Q[1]}`}); }
+    /* slot 2: la riduzione */
+    { let items;
+      if(l === 1){ const p = rnd(2, 6), q = rnd(1, 9), r = rnd(1, 7); items = [`${p}(a + ${q}) + ${mono(r, {a:1})}`, `${p}a + ${p*q} + ${mono(r, {a:1})}`, `${p + r}a + ${p*q}`]; }
+      else if(l === 2){ const p = rnd(3, 7), r = rnd(1, p - 1), q = rnd(1, 9), s = rnd(1, 9);
+        items = [`${p}(x + ${q}) − ${r === 1 ? '' : r}(x − ${s})`, `${p}x + ${p*q} − ${mono(r, {x:1})} + ${r*s}`, `${p}x − ${mono(r, {x:1})} + ${p*q} + ${r*s}`, `${mono(p - r, {x:1})} + ${p*q + r*s}`]; }
+      else { const a = rnd(2, 7), b = rnd(1, 2*a - 1);
+        items = [`(x + ${a})<sup>2</sup> − x(x + ${b})`, `x<sup>2</sup> + ${2*a}x + ${a*a} − x(x + ${b})`, `x<sup>2</sup> + ${2*a}x + ${a*a} − x<sup>2</sup> − ${mono(b, {x:1})}`, `${mono(2*a - b, {x:1})} + ${a*a}`]; }
+      E.push({slot:2, type:'order', title:'La lavagna della riduzione', q:'Il professore ha semplificato un\'espressione, ma i passaggi si sono mescolati: rimetteteli in ordine.', items, from:'espressione', to:'forma ridotta',
+        hint:['Si parte dall\'espressione con le parentesi e si arriva a quella più corta.', l === 3 ? 'Prima si sviluppa il quadrato, poi si moltiplica x per la parentesi, poi si sommano i monomi simili.' : 'Prima si tolgono le parentesi (proprietà distributiva), poi si sommano i monomi simili.', items.map(plain).join(' → ') + '.'], sol:items.join(' → ')}); }
+    /* slot 2: la lente sui polinomi */
+    if(l === 1){ const okP = ['5ab', '−x<sup>2</sup>', '7', '3a<sup>2</sup>b', '−4xy', 'y<sup>3</sup>', '2abc'], noP = ['a + b', 'x − 3', '2a + b<sup>2</sup>', 'x<sup>2</sup> + 1', '3 − y', 'ab + c'];
+      const ok = shuffle(okP).slice(0, 3), no = shuffle(noP).slice(0, 4);
+      E.push({slot:2, type:'find', title:'La lente tra monomi e polinomi', q:'Tocca tutte le espressioni che sono <b>monomi</b>.', items:ok.map(h => ({h, ok:true})).concat(no.map(h => ({h}))),
+        why:it => `No: ${plain(it.h)} è una somma (o differenza) di termini, cioè un polinomio.`,
+        hint:['Un monomio è un prodotto di numeri e lettere: non contiene addizioni o sottrazioni.', 'Anche un numero da solo è un monomio. Il segno meno davanti non lo rende un polinomio.', `I monomi sono: ${ok.join(', ')}.`], sol:`monomi: ${ok.join(', ')}`}); }
+    else if(l === 2){ const G = rnd(2, 3), seen = new Set(), ok = [], no = [];
+      const poly = g => { const ts = [[pick([1, 2, 3, 4, 5, -2, -3]), {x:g}]]; for(let e = g - 1; e >= 0; e--) if(Math.random() < 0.6) ts.push([pick([1, 2, 3, 5, 7, -1, -4, -6]), e ? {x:e} : {}]); if(ts.length === 1) ts.push([rnd(1, 9), {}]); return sum(ts); };
+      for(let t = 0; t < 300 && (ok.length < 3 || no.length < 4); t++){ const g = ok.length < 3 ? G : pick([1, 4, G === 2 ? 3 : 2].filter(x => x !== G)), p = poly(g); if(seen.has(p)) continue; seen.add(p); (g === G ? ok : no).push(p); }
+      E.push({slot:2, type:'find', title:'La lente sui polinomi', q:`Tocca tutti i polinomi di <b>grado ${G}</b>.`, items:ok.map(h => ({h, ok:true})).concat(no.map(h => ({h}))),
+        why:it => `No: il grado di ${plain(it.h)} non è ${G}.`,
+        hint:['Il grado di un polinomio è il grado più alto tra i suoi termini.', `Cercate il termine con l'esponente più alto di x: deve essere ${G}.`, `Quelli giusti: ${ok.join('; ')}.`], sol:`grado ${G}: ${ok.join('; ')}`}); }
+    else { const k = rnd(2, 6), okP = [`x − ${k}`, `x<sup>2</sup> − ${k*k}`, `(x − ${k})<sup>2</sup>`, `2x − ${2*k}`, `x<sup>2</sup> − ${k}x`], noP = [`x + ${k}`, `x<sup>2</sup> + ${k*k}`, `(x + ${k})<sup>2</sup>`, `x<sup>2</sup> − ${k}`, `2x − ${k}`];
+      const ok = shuffle(okP).slice(0, 3), no = shuffle(noP).slice(0, 4);
+      E.push({slot:2, type:'find', title:'La lente sugli zeri', q:`Tocca tutte le espressioni che valgono <b>0</b> quando x = ${k}.`, items:ok.map(h => ({h, ok:true})).concat(no.map(h => ({h}))),
+        why:it => `No: con x = ${k} l'espressione ${plain(it.h)} non vale 0.`,
+        hint:[`Sostituite ${k} al posto di x in ogni espressione.`, `Per esempio x<sup>2</sup> − ${k*k} = ${k*k} − ${k*k} = 0, mentre x<sup>2</sup> + ${k*k} = ${2*k*k}.`, `Quelle giuste: ${ok.join('; ')}.`], sol:`valgono 0 per x = ${k}: ${ok.join('; ')}`}); }
+    /* slot 3: ingranaggi */
+    { const n = l === 1 ? 2 : 3;
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi dei monomi', q:'La macchina che moltiplica i monomi è inceppata: i suoi ingranaggi (coefficienti e lettere) devono girare tutti insieme!', n, reps:l + 2,
+        hint:['Una persona conta «tre, due, uno, ora!».', 'Toccate tutti nello stesso istante.', 'Se non funziona, rallentate e riprovate.'], sol:`${n} ingranaggi toccati insieme per ${l + 2} volte`}); }
+    /* slot 3: il percorso della sostituzione */
+    { let ex, st, end, notes, s;
+      if(l === 1){ const a = rnd(2, 9), b = rnd(2, 9), p = rnd(2, 5), q = rnd(2, 5); ex = `${p}a + ${q}b`; st = [`a = ${a}, b = ${b}`, `${p} · ${a} + ${q} · ${b}`, `${p*a} + ${q*b}`]; end = `= ${p*a + q*b}`; notes = ['ecco i valori delle lettere', 'al posto delle lettere i numeri (tra numero e lettera c\'è un per)', 'prima le moltiplicazioni']; s = `${ex} = ${p*a + q*b}`; }
+      else if(l === 2){ let a = 0, b = 0; while(!a) a = rnd(-5, 5); while(!b) b = rnd(-6, 6); ex = 'a² − 2b'; st = [`a = ${N(a)}, b = ${N(b)}`, `${plain(pn(a))}² − 2 · ${plain(pn(b))}`, `${a*a} ${-2*b < 0 ? '−' : '+'} ${Math.abs(2*b)}`]; end = `= ${N(a*a - 2*b)}`; notes = ['valori delle lettere: attenzione ai negativi', 'i numeri negativi vanno tra parentesi', 'il quadrato di un negativo è positivo']; s = `a² − 2b = ${N(a*a - 2*b)}`; }
+      else { const a = rnd(2, 8), b = rnd(1, 7); ex = '(a + b)² − 2ab'; st = [`(a + b)² − 2ab = a² + b²`, `a = ${a}, b = ${b}`, `${a*a} + ${b*b}`]; end = `= ${a*a + b*b}`; notes = ['sviluppando il quadrato il doppio prodotto si cancella', 'ora i valori delle lettere', 'quadrati dei due numeri']; s = `(a + b)² − 2ab = a² + b² = ${a*a + b*b}`; }
+      E.push({slot:3, type:'path', title:'Il percorso della sostituzione', q:`Portate l'elettrone lungo i passaggi per calcolare <b>${ex}</b>.`, sprite:'elettrone', what:'l\'elettrone', start:ex, stations:st, end, notes,
+        hint:['Muovete il dito lentamente, restando al centro del percorso.', 'Se l\'elettrone esce, riparte dall\'ultima tappa raggiunta.', 'Leggete i passaggi a ogni tappa: sono il procedimento della sostituzione.'], sol:s}); }
+    return E;
+  };
+})();
+
+/* ---------- EQUAZIONI ---------- */
+ROOMS.equazioni.more = (() => {
+  const X = '<i>x</i>', cf = a => a === 1 ? '' : a === -1 ? '−' : N(a), mono = a => a === 0 ? '0' : cf(a) + X;
+  const lin = (a, b) => a === 0 ? N(b) : mono(a) + (b > 0 ? ' + ' + N(b) : b < 0 ? ' − ' + N(-b) : '');
+  const nz = (a, b) => { let x = 0; while(x === 0) x = rnd(a, b); return x; };
+  /* equazione casuale con soluzione s, per livello */
+  const eqFor = (l, s) => {
+    if(l === 1){ if(Math.random() < 0.5){ const b = rnd(1, 12); return `${lin(1, b)} = ${N(s + b)}`; } const a = rnd(2, 9); return `${mono(a)} = ${N(a*s)}`; }
+    if(l === 2){ const a = rnd(2, 7), b = nz(-9, 12); return `${lin(a, b)} = ${N(a*s + b)}`; }
+    const a = rnd(2, 5), c = rnd(1, a - 1) * (Math.random() < 0.5 ? 1 : -1), b = nz(-6, 6), d = a*(s + b) - c*s; return `${a}(${lin(1, b)}) = ${lin(c, d)}`; };
+  const solRange = l => l === 1 ? [1, 15] : l === 2 ? [1, 12] : [-6, 9];
+  return function(l){
+    const E = [];
+    /* slot 1: età */
+    if(l === 1){ if(Math.random() < 0.5){ const k = rnd(3, 12), x = rnd(8, 40);
+        E.push({slot:1, type:'lock', title:'Il problema delle età', q:`Tra ${k} anni la nonna del professore avrà ${x + k + 40} anni. Quanti anni ha oggi? (Scrivete l'equazione x + ${k} = ${x + k + 40})`, ans:x + 40, unit:'anni',
+          hint:['Chiamate x l\'età di oggi.', `x + ${k} = ${x + k + 40}: togliete ${k} da tutti e due i membri.`, `x = ${x + k + 40} − ${k} = ${x + 40}.`], sol:`x + ${k} = ${x + k + 40} → x = ${x + 40}`}); }
+      else { const m = rnd(2, 4), x = rnd(5, 14);
+        E.push({slot:1, type:'lock', title:'Il problema delle età', q:`Il professore ha ${m === 2 ? 'il doppio' : m === 3 ? 'il triplo' : 'il quadruplo'} dell'età di sua nipote: ha ${m*x} anni. Quanti anni ha la nipote?`, ans:x, unit:'anni',
+          hint:['Chiamate x l\'età della nipote.', `L'equazione è ${m}x = ${m*x}.`, `x = ${m*x} : ${m} = ${x}.`], sol:`${m}x = ${m*x} → x = ${x}`}); } }
+    else if(l === 2){ const m = rnd(3, 5), x = rnd(6, 14), S = (m + 1)*x;
+      E.push({slot:1, type:'lock', title:'Il problema delle età', q:`Il padre ha ${m === 3 ? 'il triplo' : m === 4 ? 'il quadruplo' : 'il quintuplo'} dell'età del figlio. Insieme hanno ${S} anni. Quanti anni ha il figlio?`, ans:x, unit:'anni',
+        hint:[`Chiamate x l'età del figlio: il padre ha ${m}x anni.`, `x + ${m}x = ${S} → ${m + 1}x = ${S}.`, `x = ${S} : ${m + 1} = ${x}.`], sol:`x + ${m}x = ${S} → x = ${x}`}); }
+    else { const m = pick([2, 3]), x = m === 2 ? rnd(8, 14) : rnd(5, 10), k = m === 2 ? rnd(10, 20) : rnd(2, 6), D = (m - 1)*(x + k);
+      E.push({slot:1, type:'lock', title:'Il problema delle età', q:`Il padre ha ${D} anni più del figlio. Tra ${k} anni il padre avrà ${m === 2 ? 'il doppio' : 'il triplo'} degli anni del figlio. Quanti anni ha oggi il figlio?`, ans:x, unit:'anni',
+        hint:[`Chiamate x l'età del figlio oggi: il padre ha x + ${D}. Tra ${k} anni: x + ${k} e x + ${D + k}.`, `x + ${D + k} = ${m}(x + ${k}) → x + ${D + k} = ${m}x + ${m*k}.`, `${m - 1 === 1 ? '' : (m - 1)}x = ${D + k} − ${m*k} = ${D + k - m*k} → x = ${x}.`], sol:`x + ${D + k} = ${m}(x + ${k}) → x = ${x}`}); }
+    /* slot 1: la verifica */
+    if(l === 1){ const a = rnd(2, 9), s = rnd(2, 12), c = a*s;
+      E.push({slot:1, type:'choice', title:'Le provette della verifica', q:`Quale numero è la soluzione dell'equazione ${mono(a)} = ${c}?`, opts:nopts(s, [c - a, c + a, s + 1], c*a),
+        hint:['La soluzione è il numero che, messo al posto di x, rende veri i due membri.', `${a} · ? = ${c}.`, `x = ${c} : ${a} = ${s}.`], sol:`${mono(a)} = ${c} → x = ${s}`}); }
+    else if(l === 2){ const a = rnd(4, 9), c = rnd(1, a - 2), s = rnd(2, 10), b = rnd(1, 12), d = (a - c)*s + b;
+      E.push({slot:1, type:'choice', title:'Le provette della verifica', q:`Quale numero è la soluzione dell'equazione ${lin(a, b)} = ${lin(c, d)}?`, opts:nopts(s, [(d + b)/(a - c), (d - b)/(a + c), s + 1, -s], d - b),
+        hint:['Portate le x a sinistra e i numeri a destra, cambiando segno a chi passa dall\'altra parte.', `${mono(a - c)} = ${d} − ${b} = ${d - b}.`, `x = ${d - b} : ${a - c} = ${s}.`], sol:`${mono(a - c)} = ${d - b} → x = ${s}`}); }
+    else { const [a, b] = pick([[2, 3], [3, 6], [2, 4], [4, 12], [3, 4], [2, 6]]), L = a*b/gcd(a, b), x = L*rnd(1, 6), c = x/a + x/b;
+      E.push({slot:1, type:'choice', title:'Le provette della verifica', q:`Quale numero è la soluzione dell'equazione ${frac(X, a)} + ${frac(X, b)} = ${c}?`, opts:nopts(x, [c*(a + b), c*a, x/2, c*L], x*2 + 1),
+        hint:[`Moltiplicate tutti e due i membri per ${L} (il minimo comune multiplo dei denominatori).`, `${L/a}x + ${L/b}x = ${c*L} → ${L/a + L/b}x = ${c*L}.`, `x = ${c*L} : ${L/a + L/b} = ${x}.`], sol:`${L/a + L/b}x = ${c*L} → x = ${x}`}); }
+    /* slot 2: schedario delle equazioni */
+    { const [lo, hi] = solRange(l), ss = shuffle(Array.from({length:hi - lo + 1}, (_, i) => lo + i).filter(v => v !== 0)).slice(0, 4), pairs = [], seen = new Set();
+      ss.forEach(s => { let e; do e = eqFor(l, s); while(seen.has(e)); seen.add(e); pairs.push([e, `${X} = ${N(s)}`]); });
+      E.push({slot:2, type:'match', title:'Lo schedario delle soluzioni', q:'Abbinate ogni equazione alla sua soluzione.', pairs,
+        hint:['Potete risolvere ogni equazione oppure provare a sostituire le soluzioni.', l === 3 ? 'Prima togliete la parentesi, poi portate le x da una parte e i numeri dall\'altra.' : 'Isolate la x: togliete o aggiungete lo stesso numero, oppure dividete per lo stesso numero.', pairs.map(p => `${p[0]} → ${p[1]}`).join('; ') + '.'], sol:pairs.map(p => `${p[0]} → ${p[1]}`).join('; ')}); }
+    /* slot 2: il problema da tradurre */
+    { let Q;
+      if(l === 1){ const b = rnd(2, 15), c = b + rnd(3, 20), k = rnd(2, 6);
+        Q = pick([[`Un numero aumentato di ${b} dà ${c}.`, `${lin(1, b)} = ${c}`, [`${lin(1, -b)} = ${c}`, `${mono(b)} = ${c}`], `${X} = ${b + c}`],
+          [`Un numero moltiplicato per ${k} dà ${k*c}.`, `${mono(k)} = ${k*c}`, [`${lin(1, k)} = ${k*c}`, `${frac(X, k)} = ${k*c}`], `${X} = ${k} + ${k*c}`]]); }
+      else if(l === 2){ const b = rnd(1, 9), c = rnd(5, 30);
+        Q = pick([[`Il doppio di un numero, diminuito di ${b}, è ${c}.`, `${lin(2, -b)} = ${c}`, [`2(${lin(1, -b)}) = ${c}`, `${lin(1, -2*b)} = ${c}`], `${lin(2, b)} = ${c}`],
+          [`La somma di un numero e del suo triplo è ${4*c}.`, `${X} + 3${X} = ${4*c}`, [`${lin(1, 3)} = ${4*c}`, `3(${lin(1, 1)}) = ${4*c}`], `${X} · 3${X} = ${4*c}`]]); }
+      else { const n = rnd(5, 30), T = 3*n + 3, k = rnd(2, 8), h = rnd(3, 12), P2 = 2*(2*h + k);
+        Q = pick([[`La somma di tre numeri consecutivi è ${T}.`, `${X} + (${lin(1, 1)}) + (${lin(1, 2)}) = ${T}`, [`${X} + ${X} + ${X} = ${T}`, `${X} + 2${X} + 3${X} = ${T}`], `${lin(3, 1)} = ${T}`],
+          [`In un rettangolo la base supera l'altezza di ${k} cm e il perimetro è ${P2} cm (x = altezza).`, `2(${X} + ${X} + ${k}) = ${P2}`, [`${X} + ${X} + ${k} = ${P2}`, `${lin(2, k)} = ${P2}`], `${X}(${lin(1, k)}) = ${P2}`]]); }
+      E.push({slot:2, type:'choice', title:'Le provette del problema', q:`Quale equazione traduce il problema? «${Q[0]}»`, opts:opts4(Q[1], Q[2], Q[3]),
+        hint:['Chiamate x il numero che non conoscete e traducete la frase pezzo per pezzo.', l === 3 ? 'Tre numeri consecutivi sono x, x + 1, x + 2; il perimetro del rettangolo è 2 · (base + altezza).' : 'Attenzione alle parentesi: «il doppio di un numero, diminuito di…» non è «il doppio di (un numero diminuito di…)».', `È ${Q[1]}.`], sol:`${Q[0]} → ${Q[1]}`}); }
+    /* slot 2: la lavagna delle soluzioni */
+    { const [lo, hi] = solRange(l), ss = shuffle(Array.from({length:hi - lo + 1}, (_, i) => lo + i).filter(v => v !== 0)).slice(0, 4).sort((a, b) => a - b), items = [], seen = new Set();
+      ss.forEach(s => { let e; do e = eqFor(l, s); while(seen.has(e)); seen.add(e); items.push(e); });
+      E.push({slot:2, type:'order', title:'La lavagna delle soluzioni', q:'Mettete le equazioni in ordine, dalla soluzione più piccola alla più grande.', items, from:'soluzione minore', to:'soluzione maggiore',
+        hint:['Risolvete ogni equazione e scrivete la soluzione accanto.', 'Poi ordinate le soluzioni sulla retta dei numeri (i negativi vengono prima).', items.map((e, i) => `${e} (x = ${N(ss[i])})`).join(' < ') + '.'], sol:items.map((e, i) => `${plain(e)}: x = ${N(ss[i])}`).join(' < ')}); }
+    /* slot 3: il percorso dell'incognita */
+    { let st, end, start, notes, s;
+      if(l === 1){ const a = rnd(2, 9), x = rnd(1, 10), b = rnd(1, 15), c = a*x + b; start = `${a}x + ${b} = ${c}`; st = [`${a}x = ${c} − ${b}`, `${a}x = ${c - b}`]; end = `x = ${x}`; notes = [`${b} passa a destra e cambia segno`, 'si fa il calcolo']; s = `${start} → x = ${x}`; }
+      else if(l === 2){ const a = rnd(4, 9), c = rnd(1, a - 2), x = rnd(1, 9), b = rnd(1, 9), d = (a - c)*x + b; start = `${a}x + ${b} = ${c === 1 ? '' : c}x + ${d}`; st = [`${a}x − ${c === 1 ? '' : c}x = ${d} − ${b}`, `${a - c}x = ${d - b}`]; end = `x = ${x}`; notes = ['le x a sinistra, i numeri a destra (chi passa cambia segno)', 'si sommano i termini simili']; s = `${start} → x = ${x}`; }
+      else { const a = rnd(2, 6), b = rnd(1, 6), x = rnd(1, 9), c = a*(x + b); start = `${a}(x + ${b}) = ${c}`; st = [`${a}x + ${a*b} = ${c}`, `${a}x = ${c} − ${a*b}`, `${a}x = ${c - a*b}`]; end = `x = ${x}`; notes = ['si toglie la parentesi (proprietà distributiva)', `${a*b} passa a destra e cambia segno`, 'si fa il calcolo']; s = `${start} → x = ${x}`; }
+      E.push({slot:3, type:'path', title:'Il percorso dell\'incognita', q:'Accompagnate la goccia lungo i passaggi che risolvono l\'equazione: all\'arrivo c\'è la soluzione.', sprite:'goccia', what:'la goccia', start, stations:st, end, notes,
+        hint:['Muovete il dito lentamente, restando al centro del percorso.', 'Se la goccia esce, riparte dall\'ultima tappa raggiunta.', 'A ogni tappa leggete il passaggio: è il procedimento per risolvere l\'equazione.'], sol:s}); }
+    /* slot 3: ingranaggi della bilancia */
+    { const n = l === 1 ? 2 : 3;
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi della bilancia', q:'Principio di equivalenza: ciò che si fa a un piatto della bilancia va fatto anche all\'altro, nello stesso momento! Girate gli ingranaggi tutti insieme.', n, reps:l + 2,
+        hint:['Una persona conta «tre, due, uno, ora!».', 'Toccate tutti nello stesso istante, come i due piatti che si muovono insieme.', 'Se non funziona, rallentate e riprovate.'], sol:`${n} ingranaggi toccati insieme per ${l + 2} volte`}); }
+    return E;
+  };
+})();
+
+/* ---------- NUMERI RELATIVI E PIANO CARTESIANO ---------- */
+ROOMS.relativi.more = (() => {
+  const rel = n => n > 0 ? '+' + N(n) : N(n), par = n => `(${rel(n)})`, pt = (x, y) => `(${N(x || 0)}; ${N(y || 0)})`;
+  const nz = (a, b) => { let x = 0; while(x === 0) x = rnd(a, b); return x; };
+  const NEG = '<small>Per i numeri negativi usate il tasto −.</small>';
+  const RN = ['I', 'II', 'III', 'IV'], quad = (x, y) => x > 0 ? (y > 0 ? 0 : 3) : (y > 0 ? 1 : 2);
+  return function(l){
+    const E = [];
+    /* slot 1: ascensore / quote */
+    if(l === 1){ const a = rnd(-2, 6), down = Math.random() < 0.5, d = down ? rnd(1, a + 4) : rnd(1, 10 - a), ans = down ? a - d : a + d;
+      E.push({slot:1, type:'lock', title:'L\'ascensore del laboratorio', q:`Il laboratorio ha 4 piani sotterranei (da −1 a −4) e 10 piani sopra il piano terra (0). Il professore è al piano ${N(a)} e ${down ? 'scende' : 'sale'} di ${d} ${d === 1 ? 'piano' : 'piani'}. A che piano arriva?${NEG}`, ans,
+        hint:[`${down ? 'Scendere' : 'Salire'} vuol dire ${down ? 'togliere' : 'aggiungere'} ${d}.`, `${par(a)} ${down ? '−' : '+'} ${d}.`, `Arriva al piano ${N(ans)}.`], sol:`${par(a)} ${down ? '−' : '+'} ${d} = ${rel(ans)}`}); }
+    else if(l === 2){ const a = rnd(-4, 5), b = rnd(2, 8), c = rnd(3, 12), d = rnd(1, 6), ans = a + b - c + d;
+      E.push({slot:1, type:'lock', title:'L\'ascensore del laboratorio', q:`L'ascensore parte dal piano ${N(a)}: sale di ${b} piani, poi scende di ${c}, poi sale di ${d}. A che piano si trova alla fine? (0 è il piano terra, i piani sotterranei sono negativi)${NEG}`, ans,
+        hint:['Ogni salita è un +, ogni discesa è un −.', `${par(a)} + ${b} − ${c} + ${d}.`, `Il risultato è ${rel(ans)}.`], sol:`${par(a)} + ${b} − ${c} + ${d} = ${rel(ans)}`}); }
+    else if(Math.random() < 0.5){ const h = rnd(5, 48)*100, d = rnd(2, 60)*50;
+      E.push({slot:1, type:'lock', title:'Il dislivello della spedizione', q:`Una vetta è a quota +${h} m, un sottomarino è a quota −${d} m (sotto il livello del mare). Qual è il dislivello tra i due, in metri?`, ans:h + d, unit:'m',
+        hint:['Il dislivello è la differenza tra la quota più alta e quella più bassa.', `${h} − (−${d}) = ${h} + ${d}.`, `${h + d} m.`], sol:`${h} − (−${d}) = ${h + d} m`}); }
+    else { const a = rnd(5, 30), b = rnd(2, 5), t = rnd(2, 8), ans = -a + b*t;
+      E.push({slot:1, type:'lock', title:'Il dislivello della spedizione', q:`Un sub è a quota −${a} m. Risale di ${b} m al minuto per ${t} minuti. A che quota si trova?${NEG}`, ans, unit:'m',
+        hint:['Risalire vuol dire aggiungere.', `In ${t} minuti risale di ${b} · ${t} = ${b*t} m.`, `−${a} + ${b*t} = ${N(ans)} m.`], sol:`−${a} + ${b} · ${t} = ${N(ans)} m`}); }
+    /* slot 1: provette del punto */
+    if(l === 1){ const x = nz(-9, 9), y = nz(-9, 9), q = quad(x, y), others = shuffle([0, 1, 2, 3].filter(k => k !== q)).map(k => `${RN[k]} quadrante`);
+      E.push({slot:1, type:'choice', title:'Le provette del punto', q:`In quale quadrante si trova il punto P${pt(x, y)}?`, opts:opts4(`${RN[q]} quadrante`, others.slice(0, 2), others[2]),
+        hint:['Guardate i segni delle due coordinate: prima la x, poi la y.', 'I: (+; +). II: (−; +). III: (−; −). IV: (+; −).', `P ha x ${x > 0 ? 'positiva' : 'negativa'} e y ${y > 0 ? 'positiva' : 'negativa'}: ${RN[q]} quadrante.`], sol:`P${pt(x, y)} → ${RN[q]} quadrante`}); }
+    else if(l === 2){ let x1, x2, y1, y2; do { x1 = rnd(-8, 8); x2 = rnd(-8, 8); y1 = rnd(-8, 8); y2 = rnd(-8, 8); } while((x1 + x2) % 2 || (y1 + y2) % 2 || x1 === x2 || y1 === y2);
+      const mx = (x1 + x2)/2, my = (y1 + y2)/2;
+      E.push({slot:1, type:'choice', title:'Le provette del punto medio', q:`Qual è il punto medio M del segmento con estremi A${pt(x1, y1)} e B${pt(x2, y2)}?`, opts:opts4(`M${pt(mx, my)}`, [`M${pt((x2 - x1)/2, (y2 - y1)/2)}`, `M${pt(x1 + x2, y1 + y2)}`, `M${pt(my, mx)}`], [`M${pt(-mx, -my)}`, `M${pt(mx + 1, my - 1)}`, `M${pt(mx - 2, my + 1)}`, `M${pt(x1, y2)}`]),
+        hint:['Le coordinate del punto medio sono le medie delle coordinate degli estremi.', `x = (${N(x1)} + ${par(x2)}) : 2; y = (${N(y1)} + ${par(y2)}) : 2.`, `M${pt(mx, my)}.`], sol:`M${pt(mx, my)}`}); }
+    else { const [a, b, c] = pick([[3, 4, 5], [6, 8, 10], [5, 12, 13], [8, 6, 10], [4, 3, 5]]), x1 = rnd(-6, 2), y1 = rnd(-8, 2), sx = pick([1, -1]), sy = pick([1, -1]), x2 = x1 + sx*a, y2 = y1 + sy*b;
+      E.push({slot:1, type:'choice', title:'Le provette della distanza', q:`Quanto misura la distanza tra A${pt(x1, y1)} e B${pt(x2, y2)}? (in unità del piano)`, opts:nopts(c, [a + b, Math.abs(a - b) || a*2, c*c], a*b),
+        hint:['Disegnate il triangolo rettangolo che ha AB come ipotenusa e i cateti paralleli agli assi.', `Cateti: |${N(x2)} − ${par(x1)}| = ${a} e |${N(y2)} − ${par(y1)}| = ${b}.`, `AB = √(${a*a} + ${b*b}) = √${c*c} = ${c}.`], sol:`√(${a}² + ${b}²) = ${c}`}); }
+    /* slot 2: schedario dei segni */
+    { const pairs = [], seenL = new Set(), seenR = new Set();
+      for(let t = 0; t < 400 && pairs.length < 4; t++){ let L, v;
+        if(l === 1){ const a = nz(-12, 12), b = nz(-12, 12), op = pick(['+', '−']); L = `${par(a)} ${op} ${par(b)}`; v = op === '+' ? a + b : a - b; }
+        else if(l === 2){ const a = nz(-9, 9), b = nz(-9, 9); if(Math.random() < 0.5){ L = `${par(a)} · ${par(b)}`; v = a*b; } else { L = `${par(a*b)} : ${par(b)}`; v = a; } }
+        else { const k = rnd(0, 2); if(k === 0){ const b = rnd(2, 5), e = rnd(2, 3); L = `(${N(-b)})<sup>${e}</sup>`; v = (-b)**e; } else if(k === 1){ const b = rnd(2, 5); L = `−${b}<sup>2</sup>`; v = -b*b; } else { const a = nz(-6, 6), b = nz(-5, 5), c = nz(-5, 5); L = `${par(a)} − ${par(b)} · ${par(c)}`; v = a - b*c; } }
+        const R = rel(v); if(seenL.has(L) || seenR.has(R)) continue; seenL.add(L); seenR.add(R); pairs.push([L, R]); }
+      E.push({slot:2, type:'match', title:'Lo schedario dei segni', q:'Abbinate ogni operazione al suo risultato.', pairs,
+        hint:[l === 1 ? 'Sottrarre un numero vuol dire sommare il suo opposto.' : 'Regola dei segni: segni uguali danno +, segni diversi danno −.', l === 3 ? 'Attenzione: (−3)² = (−3) · (−3) = +9, mentre −3² = −(3 · 3) = −9. E la moltiplicazione va fatta prima della sottrazione.' : 'Calcolate con calma, una operazione alla volta.', pairs.map(p => `${p[0]} = ${p[1]}`).join('; ') + '.'], sol:pairs.map(p => `${p[0]} = ${p[1]}`).join('; ')}); }
+    /* slot 2: il sottomarino */
+    { let a, ans, q, h2;
+      if(l === 1){ a = -rnd(10, 50); const b = rnd(5, 30); ans = a + b; q = `Il sottomarino del professore è a quota ${N(a)} m. Risale di ${b} m. Portatelo alla nuova quota.`; h2 = `${N(a)} + ${b}`; }
+      else if(l === 2){ a = -rnd(5, 30); const c = rnd(10, 30); let d = rnd(5, 25); if(d === c) d++; ans = a - c + d; q = `Il sottomarino è a quota ${N(a)} m. Scende di ${c} m e poi risale di ${d} m. Portatelo alla quota finale.`; h2 = `${N(a)} − ${c} + ${d}`; }
+      else { a = -rnd(0, 10); const k = rnd(2, 6), t = rnd(3, 9); ans = a - k*t; q = `Il sottomarino è a quota ${N(a)} m e scende di ${k} m al minuto per ${t} minuti. Portatelo alla quota finale.`; h2 = `${N(a)} − ${k} · ${t} = ${N(a)} − ${k*t}`; }
+      const min = -80, max = 20;
+      const draw = v => { const Y = z => 20 + (20 - z)*2.6; let g = '';
+        for(let z = -80; z <= 20; z += 10) g += `<path d="M150 ${Y(z)}h12" stroke="#18223A" stroke-width="2"/><text x="168" y="${Y(z) + 5}" font-size="13" font-weight="800" fill="#18223A">${N(z)}</text>`;
+        return `<svg viewBox="0 0 220 300"><rect x="10" y="${Y(20)}" width="140" height="${Y(0) - Y(20)}" fill="#DDEFFC"/><rect x="10" y="${Y(0)}" width="140" height="${Y(-80) - Y(0)}" fill="#2F6FDB" opacity=".55"/><path d="M10 ${Y(0)}H150" stroke="#fff" stroke-width="3"/>${g}<g transform="translate(80 ${Y(v)})"><ellipse rx="34" ry="12" fill="#F2C94C" stroke="#18223A" stroke-width="2"/><rect x="-6" y="-22" width="14" height="12" fill="#F2C94C" stroke="#18223A" stroke-width="2"/><circle cx="14" r="4" fill="#fff" stroke="#18223A"/></g></svg>`; };
+      E.push({slot:2, type:'dial', title:'L\'esperimento del sottomarino', q, min, max, step:1, start:a, ans, fmt:v => `quota ${N(v)} m`, draw,
+        hint:['Il livello del mare è lo 0: sotto il mare le quote sono negative. Risalire è +, scendere è −.', `Calcolate ${h2}.`, `La quota finale è ${N(ans)} m.`], sol:`${h2} = ${N(ans)} m`}); }
+    /* slot 3: il percorso sulla mappa */
+    { const k = l + 1, pts = [], seen = new Set();
+      while(pts.length < k){ const x = nz(-7, 7), y = nz(-7, 7), key = x + ',' + y; if(seen.has(key)) continue; if(pts.length && quad(x, y) === quad(pts[pts.length - 1][0], pts[pts.length - 1][1])) continue; seen.add(key); pts.push([x, y]); }
+      const L = 'ABCD', st = pts.map((p, i) => L[i] + pt(p[0], p[1])), notes = pts.map(p => `${RN[quad(p[0], p[1])]} quadrante: x ${p[0] > 0 ? 'positiva' : 'negativa'}, y ${p[1] > 0 ? 'positiva' : 'negativa'}`);
+      E.push({slot:3, type:'path', title:'Il percorso sulla mappa', q:'Seguite la rotta del tesoro: passate per tutti i punti della mappa, dall\'origine al forziere.', sprite:'elettrone', what:'il segnalino', start:'O(0; 0)', stations:st, end:'il tesoro!', notes,
+        hint:['Muovete il dito lentamente, restando al centro del percorso.', 'Se il segnalino esce, riparte dall\'ultima tappa raggiunta.', 'A ogni tappa leggete in quale quadrante si trova il punto.'], sol:`O → ${st.join(' → ')} → tesoro`}); }
+    /* slot 3: il ritmo dei segni */
+    { const bpm = pick([60, 66, 72]), need = [0, 8, 10, 12][l];
+      E.push({slot:3, type:'rhythm', title:'Il ritmo dei segni', q:`Il bersaglio di sinistra vale −1, quello di destra +1. Alternateli a tempo: dopo ${need} tocchi giusti la somma torna a 0, perché ${need/2} · (−1) + ${need/2} · (+1) = 0!`, theme:'ingranaggio', bpm, need, two:true,
+        hint:['Toccate quando l\'anello si chiude sul bersaglio acceso.', 'Si alternano sinistra e destra: −1, +1, −1, +1…', 'Una persona può tenere il bersaglio di sinistra e un\'altra quello di destra.'], sol:`${need/2} · (−1) + ${need/2} · (+1) = 0`}); }
+    return E;
+  };
+})();
+
+/* ---------- SOLIDI ---------- */
+ROOMS.solidi.more = (() => {
+  const C = 'fill="#F2D3B3" stroke="#7A3E14" stroke-width="3" stroke-linejoin="round"';
+  const sq = (x, y, s) => `<rect x="${x}" y="${y}" width="${s}" height="${s}" ${C}/>`;
+  const NET = {
+    cubo:() => { const s = 40; return `<svg viewBox="0 0 180 140">${[[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]].map(([i, j]) => sq(10 + i*s, 10 + j*s, s)).join('')}</svg>`; },
+    'piramide a base quadrata':() => `<svg viewBox="0 0 180 180"><rect x="60" y="60" width="60" height="60" ${C}/><path d="M60 60L90 10L120 60M120 60L170 90L120 120M120 120L90 170L60 120M60 120L10 90L60 60" ${C}/></svg>`,
+    'prisma triangolare':() => `<svg viewBox="0 0 200 160"><rect x="10" y="50" width="180" height="60" ${C}/><path d="M70 50V110M130 50V110" stroke="#7A3E14" stroke-width="3"/><path d="M70 50L100 2L130 50M70 110L100 158L130 110" ${C}/></svg>`,
+    cilindro:() => `<svg viewBox="0 0 200 200"><rect x="10" y="60" width="180" height="80" ${C}/><circle cx="100" cy="31" r="29" ${C}/><circle cx="100" cy="169" r="29" ${C}/></svg>`,
+    cono:() => `<svg viewBox="0 0 200 200"><path d="M100 10L30 130A80 80 0 0 0 170 130z" ${C}/><circle cx="100" cy="165" r="32" ${C}/></svg>`,
+    tetraedro:() => `<svg viewBox="0 0 200 180"><path d="M10 170L100 14L190 170z" ${C}/><path d="M55 92H145L100 170z" fill="none" stroke="#7A3E14" stroke-width="3"/></svg>`};
+  return function(l){
+    const E = [];
+    /* slot 1: sviluppi */
+    { const pool = l === 1 ? ['cubo', 'cilindro', 'piramide a base quadrata'] : l === 2 ? ['cubo', 'cilindro', 'piramide a base quadrata', 'prisma triangolare', 'cono'] : Object.keys(NET), k = pick(pool), others = shuffle(Object.keys(NET).concat(['sfera', 'parallelepipedo']).filter(x => x !== k));
+      const DES = {cubo:'6 quadrati uguali', cilindro:'un rettangolo e due cerchi', 'piramide a base quadrata':'un quadrato e 4 triangoli', 'prisma triangolare':'3 rettangoli e 2 triangoli', cono:'un settore circolare e un cerchio', tetraedro:'4 triangoli equilateri'};
+      E.push({slot:1, type:'choice', title:'Le provette degli sviluppi', q:'Il professore ha ritagliato questo sviluppo di cartone. Piegandolo, quale solido si ottiene?', fig:NET[k](), opts:opts4(k, others.slice(0, 2), others.slice(2)),
+        hint:['Contate le facce dello sviluppo e guardate che forma hanno.', `Lo sviluppo è formato da ${DES[k]}.`, `Si ottiene: ${k}.`], sol:`sviluppo con ${DES[k]} → ${k}`}); }
+    /* slot 1: inverso */
+    if(l === 1){ const s = rnd(2, 10);
+      E.push({slot:1, type:'lock', title:'La cassaforte dello spigolo', q:`Un cubo ha il volume di ${s**3} cm³. Quanto misura il suo <b>spigolo</b>?`, ans:s, unit:'cm',
+        hint:['Il volume del cubo è spigolo · spigolo · spigolo.', `Cercate il numero che moltiplicato tre volte per sé stesso dà ${s**3}.`, `${s} · ${s} · ${s} = ${s**3}: lo spigolo è ${s} cm.`], sol:`∛${s**3} = ${s} cm`}); }
+    else if(l === 2){ const a = rnd(3, 12), b = rnd(2, 9), c = rnd(2, 10);
+      E.push({slot:1, type:'lock', title:'La cassaforte dell\'altezza', q:`Una scatola a forma di parallelepipedo ha il volume di ${a*b*c} cm³. La base è un rettangolo di ${a} cm per ${b} cm. Quanto è <b>alta</b> la scatola?`, ans:c, unit:'cm',
+        hint:['V = area di base · altezza, quindi altezza = V : area di base.', `Area di base = ${a} · ${b} = ${a*b} cm².`, `${a*b*c} : ${a*b} = ${c} cm.`], sol:`h = ${a*b*c} : ${a*b} = ${c} cm`}); }
+    else { const r = rnd(1, 6), h = rnd(2, 12), V = 3.14*r*r*h;
+      E.push({slot:1, type:'lock', title:'La cassaforte dell\'altezza', q:`Un barattolo cilindrico ha raggio ${r} cm e volume ${N(V)} cm³. Quanto è <b>alto</b>? (π ≈ 3,14)`, ans:h, tol:0.06, unit:'cm',
+        hint:['V = area di base · altezza, quindi altezza = V : area di base.', `Area di base = 3,14 · ${r*r} = ${N(3.14*r*r)} cm².`, `${N(V)} : ${N(3.14*r*r)} = ${h} cm.`], sol:`h = ${N(V)} : ${N(3.14*r*r)} = ${h} cm`}); }
+    /* slot 2: formule */
+    { const F = l === 1 ? [['cubo', 'V = s<sup>3</sup>'], ['parallelepipedo', 'V = a · b · c'], ['prisma', 'V = A<sub>b</sub> · h'], ['piramide', 'V = A<sub>b</sub> · h : 3']]
+        : l === 2 ? [['cubo', 'V = s<sup>3</sup>'], ['parallelepipedo', 'V = a · b · c'], ['prisma', 'V = A<sub>b</sub> · h'], ['piramide', 'V = A<sub>b</sub> · h : 3'], ['cilindro', 'V = π · r<sup>2</sup> · h'], ['cono', 'V = π · r<sup>2</sup> · h : 3'], ['sfera', 'V = 4/3 · π · r<sup>3</sup>']]
+        : [['superficie totale del cubo', '6 · s<sup>2</sup>'], ['superficie laterale del cilindro', '2 · π · r · h'], ['superficie della sfera', '4 · π · r<sup>2</sup>'], ['superficie laterale del prisma retto', 'perimetro di base · h'], ['superficie laterale della piramide retta', 'perimetro di base · apotema : 2'], ['superficie laterale del cono', 'π · r · apotema']];
+      const sel = shuffle(F).slice(0, 4);
+      E.push({slot:2, type:'match', title:'Lo schedario delle formule', q:`Abbinate ogni ${l === 3 ? 'superficie' : 'solido'} alla sua formula.`, pairs:sel,
+        hint:[l === 3 ? 'Le superfici laterali si ottengono «srotolando» il solido.' : 'Prismi e cilindri: area di base · altezza. Piramidi e coni: lo stesso, diviso 3.', l === 3 ? 'L\'etichetta di un cilindro srotolata è un rettangolo con base 2πr e altezza h.' : 'Nel cerchio l\'area di base è π · r².', sel.map(p => `${p[0]}: ${plain(p[1])}`).join('; ') + '.'], sol:sel.map(p => `${p[0]} → ${plain(p[1])}`).join('; ')}); }
+    /* slot 2: l'acquario */
+    { let q, ans, step, h2, h3, cyl = l === 3;
+      if(l === 1){ const a = rnd(2, 5), b = rnd(2, 4), h = rnd(2, 8); ans = h; step = 1; q = `L'acquario del professore ha la base rettangolare di ${a} dm per ${b} dm. Ci versa ${a*b*h} litri d'acqua. Fino a che altezza arriva l'acqua? (1 L = 1 dm³)`; h2 = `Area di base = ${a} · ${b} = ${a*b} dm².`; h3 = `${a*b*h} : ${a*b} = ${h} dm.`; }
+      else if(l === 2){ const a = pick([2, 4]), b = pick([3, 5]), h = rnd(2, 15)/2; ans = h; step = 0.5; q = `Una vasca ha la base rettangolare di ${a} dm per ${b} dm. Ci versa ${N(a*b*h)} litri d'acqua. Fino a che altezza arriva l'acqua? (1 L = 1 dm³)`; h2 = `Area di base = ${a} · ${b} = ${a*b} dm².`; h3 = `${N(a*b*h)} : ${a*b} = ${N(h)} dm.`; }
+      else { const r = rnd(1, 2), h = rnd(2, 16)/2, V = 3.14*r*r*h; ans = h; step = 0.5; q = `Un serbatoio cilindrico ha il raggio di base di ${r} dm. Ci versa ${N(V)} litri d'acqua. Fino a che altezza arriva l'acqua? (π ≈ 3,14; 1 L = 1 dm³)`; h2 = `Area di base = 3,14 · ${r*r} = ${N(3.14*r*r)} dm².`; h3 = `${N(V)} : ${N(3.14*r*r)} = ${N(h)} dm.`; }
+      const draw = v => { const Y = z => 230 - z*21; let g = ''; for(let z = 0; z <= 10; z++) g += `<path d="M150 ${Y(z)}h${z % 2 ? 8 : 14}" stroke="#5E6A82" stroke-width="2"/>` + (z % 2 ? '' : `<text x="168" y="${Y(z) + 5}" font-size="13" font-weight="800" fill="#18223A">${z}</text>`);
+        return `<svg viewBox="0 0 200 250"><rect x="30" y="${Y(v)}" width="120" height="${v*21}" fill="#7FC4F0" opacity=".75"/>${cyl ? `<ellipse cx="90" cy="${Y(v)}" rx="60" ry="8" fill="#5BB0E8" opacity=".8"/>` : ''}<path d="M30 ${Y(10.5)}V230H150V${Y(10.5)}" fill="none" stroke="#5E6A82" stroke-width="5"/>${g}<text x="182" y="20" text-anchor="end" font-size="13" font-weight="800" fill="#5E6A82">dm</text></svg>`; };
+      E.push({slot:2, type:'dial', title:'L\'esperimento dell\'acquario', q, min:0, max:10, step, start:0, ans, fmt:v => `acqua alta ${N(v)} dm`, draw,
+        hint:['Il volume dell\'acqua è area di base · altezza: l\'altezza è volume : area di base.', h2, h3], sol:h3}); }
+    /* slot 3: il viaggio della goccia */
+    { let st, end, notes, s, start;
+      if(l === 1){ const a = rnd(2, 9), b = rnd(2, 6), c = rnd(2, 8); start = 'parallelepipedo'; st = [`Ab = ${a} · ${b} = ${a*b} cm²`, `· h = ${c} cm`]; end = `V = ${a*b*c} cm³`; notes = ['prima l\'area della base', 'poi si moltiplica per l\'altezza']; s = `V = ${a*b} · ${c} = ${a*b*c} cm³`; }
+      else if(l === 2){ const a = rnd(2, 9), h = pick([3, 6, 9, 12]); start = 'piramide'; st = [`Ab = ${a} · ${a} = ${a*a} cm²`, `· h = ${a*a*h}`, ': 3']; end = `V = ${a*a*h/3} cm³`; notes = ['area della base quadrata', 'per l\'altezza', 'la piramide è un terzo del prisma con la stessa base e altezza']; s = `V = ${a*a} · ${h} : 3 = ${a*a*h/3} cm³`; }
+      else { const r = rnd(1, 5), h = rnd(2, 10); start = 'cilindro'; st = [`r² = ${r*r}`, `Ab = ${N(3.14*r*r)} cm²`, `· h = ${h} cm`]; end = `V = ${N(3.14*r*r*h)} cm³`; notes = ['il raggio al quadrato', 'per π ≈ 3,14: area del cerchio di base', 'per l\'altezza']; s = `V = ${N(3.14*r*r)} · ${h} = ${N(3.14*r*r*h)} cm³`; }
+      E.push({slot:3, type:'path', title:'Il viaggio della goccia nel serbatoio', q:`Accompagnate la goccia lungo i passaggi per calcolare il volume ${start === 'piramide' ? 'della' : 'del'} ${start}.`, sprite:'goccia', what:'la goccia', start, stations:st, end, notes,
+        hint:['Muovete il dito lentamente, restando al centro del percorso.', 'Se la goccia esce, riparte dall\'ultima tappa raggiunta.', 'A ogni tappa leggete il passaggio del calcolo del volume.'], sol:s}); }
+    /* slot 3: nastro trasportatore */
+    { const n = l === 1 ? 2 : 3;
+      E.push({slot:3, type:'sync', title:'Gli ingranaggi del nastro trasportatore', q:'Il nastro che porta i solidi sugli scaffali si è fermato: fate girare i suoi ingranaggi tutti insieme!', n, reps:l + 2,
+        hint:['Una persona conta «tre, due, uno, ora!».', 'Toccate tutti nello stesso istante.', 'Se non funziona, rallentate e riprovate.'], sol:`${n} ingranaggi toccati insieme per ${l + 2} volte`}); }
+    return E;
+  };
+})();
 /*@@STANZE@@*/
 
 const ADV = [
