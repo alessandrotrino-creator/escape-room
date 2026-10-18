@@ -37,6 +37,45 @@ Progetto **separato** dai «Giochi multitouch» (richiesta del docente del 05/10
 - **Abilità**: `skillize()` trasforma a volte `find` in `catch` (bolle che salgono) e `match` in `memory` (carte coperte).
 - Prova automatica: `scratchpad` della sessione con `inject.js` (tutte le stanze × livelli × 3/4/5 enigmi, tutte le porte renderizzate): 0 errori.
 
+## Stato al 18/10/2026: stanza da esplorare (prototipo)
+- Ispirazione: «Wolf Escape» di una collega (3D in prima persona con Three.js). Copia di sicurezza prima del lavoro: `_backup/index-2026-10-18-prima-della-stanza-3D.html`.
+- **Impostazione «La stanza»** (`P.view`): `auto` = 3D per la classe intera e per la LIM a turni, disegnata (panorama) quando le squadre dividono lo schermo; `pano` = sempre disegnata; `classica` = riquadri come prima (solo allora compare «Ambientazione»). Se WebGL o Three.js mancano si passa da soli al panorama (`X3FAIL`).
+- Codice: sezione `ESPLORA` prima dei pulsanti finali. Si aggancia a `enterRoom` (`exEnter`), `renderScene` (`exRefresh`), `solve` (fumetto di festa), `wrong`/`useHint` (faccina `exFace`), `stopAll` (`exDispose`). Stato sul tabellone: `B.x = {host, W, mode:'3d'|'pano', r3, pv}`; `B.el.dataset.w` = pelle del luogo (`lab`, `pizza`, `cell`) usata dal CSS dei pannelli.
+- **Three.js r128** da cdnjs, caricato solo quando serve (`loadThree`). Stanza: `x3Room`/`x3Scene`; oggetti degli enigmi per tipo in `PROP3` (cassaforte, provette, lavagna, schedario, lente, esperimento, leve, bacheca, cuore, tubo, ingranaggi, vasca di bolle, carte), posti in `SLOT3`; porta `x3Door` (o `x3Pore` nella cellula); cartellini `x3LabelDraw`. Si trascina per guardare, si tocca il pavimento per camminare, si tocca un oggetto per avvicinarsi e aprire l'enigma; frecce/WASD al PC; pulsanti ↺ ▲ ↻ per la LIM. Con un enigma aperto la stanza si ridisegna 1 volta su 8.
+- **Panorama** (`pvRoom`): SVG 2400×600 largo 4 volte l'altezza, si trascina; disegni in `PVART.lab/pizza/cell`; oggetti = `ICON[type]` sopra tavoli/piattaforme.
+- **Luoghi** (`WORLDS`): `frazioni` → «La pizzeria delle frazioni» (prof.ssa Fettucci), `cellula` → «Dentro la cellula» (dott. Vetrini e l'ameba Gelatina); tutte le altre stanze e il tutorial → laboratorio colorato con il `col` della stanza (Ottavia, assistente di Rovelli). In 3D: `X3W.lab/pizza/cell`. Per aggiungere un luogo: voce in `WORLDS` (cast, skin, intro, facts, eventuali `door`/`round`), `X3W[skin]`, `PVART[skin]`, CSS `.board[data-w="skin"] .panel…`, `FLOW[skin]`.
+- **Personaggi** (`CAST`, `chrSVG(c, mood, viewBox)`): SVG 200×320 con parti animate dal CSS (`.eyes`, `.hair`, `.arm`, `.bodyb`, `.mouth`, `.pet`); umori `ok`/`oops`/`think`. Parlano con `exTalk` (fumetto in basso a sinistra; toccarli nella stanza dà curiosità `facts`).
+- **Gioco di abilità nuovo** `flow` (nastro delle pizze / vescicole vaganti / nastro trasportatore): `skillize(e, id)` trasforma a volte un «cerca» in `flow` quando la visuale non è classica.
+- **Enigmi nuovi** (in `more`, blocco prima del segnaposto delle stanze): frazioni → il conto della pizzeria, le pizze in vetrina (pizze disegnate, anche equivalenti), le pizze più che a metà; cellula → mitosi, procarioti, schedario del microscopio, organuli della cellula animale. Verificati 2400 enigmi generati: 0 errori.
+- Limite già presente anche nella versione classica: sul telefono in orizzontale il tastierino non sta tutto nel pannello.
+- **Direzione artistica (richiesta del docente, 18/10/2026)**: è un'escape room per ragazzi di 12-14 anni → misteriosa, cupa, a tratti industrial/punk, sotterranei, pioggia e buio, colori spenti con luci al neon; personaggi in **stile manga** (non da bambini piccoli); battute asciutte e un po' inquietanti. Mantenere questo tono in ogni luogo nuovo.
+  - Luoghi attuali: «il sotterraneo di Rovelli» (`lab`: cemento, tubi che perdono, neon che ronzano, finestrella con pioggia e fulmini, porta blindata con spia), «La pizzeria clandestina» (`pizza`: cantina, insegna al neon rossa, grata con pioggia, forno), «Dentro la cellula» (`cell`: buio rosso scuro, organuli bioluminescenti, luce che batte come un cuore).
+  - Strumenti 3D: `grime()` e `TX.concrete/metal/wet/hazard/neon/window`; `K.pipe`, `K.steam`, `K.rain`, `K.puddle`, `K.neonLight`, `K.flashes` (lampi). La spia sopra la porta diventa verde quando la porta si può aprire.
+  - Atmosfera: `AMB` (pioggia sintetizzata, battito nella cellula, tuono ai fulmini; solo con «Suoni: Sì»), `exStorm` (fulmine ogni 9-23 s nei luoghi con pioggia). Con la visuale non classica tutto il gioco passa al tema scuro (`data-theme="dark"`, `#play.xdark`).
+
+- **Tutte le 22 stanze hanno il loro luogo** (18/10/2026). Oltre a sotterraneo, pizzeria e cellula ci sono 8 ambienti (`WSKIN`, voci create in fondo a `WORLDS` con nome, intro e 3 curiosità per stanza):
+  - `archive` archivio allagato (Minerva Calcagno): potenze, equazioni, letterale;
+  - `foundry` fonderia/officina (Bruna Vulcano): aree, angoli, materia, forze;
+  - `crypt` cripta/sala anatomica (dott. Osvaldo Necchi): divisibilità, corpo;
+  - `casino` bisca clandestina (Asso Ferretti): proporzioni, probabilità;
+  - `cave` miniera, stanza rotonda (Dante «Ruggine» Ferrari): relativi, solidi, terra;
+  - `green` serra abbandonata con la pianta carnivora (Edera Lombardi): piante, ecosistemi, genetica;
+  - `obs` osservatorio con la cupola aperta, stanza rotonda (Selene Moretti): cerchio, universo;
+  - `power` centrale in blackout con bobine di Tesla (Elettra Zappa): elettricità.
+  - Ogni ambiente ha: `X3W[skin]` (3D; stanze rotonde con `x3Round`), `PVART[skin]` (disegno per le squadre), CSS dei pannelli con il colore `--pk`, `FLOW[skin]` (titolo e moto `belt`/`float` del gioco del nastro), suono in `AMB` (pioggia nei luoghi `STORMY`, ronzio in fonderia e bisca, vento e gocce in cripta e miniera, battito nella cellula).
+  - `chrSVG` ora ha anche acconciature `lunghi`, `rasato`, `corti`, `chignon`; cappelli `casco`, `cilindro`, `saldatore`; `mask`, `beard`, `occhiaie`, `foglie`, `sparks`; attrezzi `libro`, `martello`, `bisturi`, `carta`, `piccone`, `foglia`, `cannocchiale`, `tester`.
+  - Richiesta del docente: **cupo sì, ma si deve capire**. Ogni oggetto degli enigmi ha davanti una luce chiara sua; se un ambiente risulta troppo buio si alzano `amb`/`hemi` e si abbassa la nebbia nel `return` del builder (la cripta è già stata schiarita così). Gli arredi grandi vanno messi dove si vedono dalla partenza (0; 3,6) guardando verso la porta.
+  - Verifica: tutte le 22 stanze aperte in 3D e in panorama senza errori; giro completo (enigmi → porta → stanza successiva) provato.
+
+## Stanza speciale: la sala giochi (storia dei videogiochi, 18/10/2026)
+- `ROOMS.videogiochi` (area `x` = «Stanze speciali», avventura `gameover` «Game over?»), luogo `arcade` «La sala giochi abbandonata» con Nico «Gettone» Arcadi (cappellino, cuffie, joystick). Cabinati 3D con schermi animati (`x3Cab`, `cabAnim`), pioggia sulla vetrina, bip delle macchine in `AMB`.
+- Enigmi: 1 di storia (`VG.know`: anni trascorsi, pixel, bit = potenze di 2, tetramini, Jumpman, fantasmi di Pac-Man, linea del tempo di giochi e console, autori) + 2 **minigiochi** (`type:'arcade'`, `game`, `lv`; `VG.game`).
+- Minigiochi in `ARC` (motore comune `PZ.arcade`: console d'epoca `cons`, pulsanti a più mani, tastiera, trascinamento, strisciata, tocco; perdere una vita non toglie punti): `pong` (cooperativo a due racchette; alla LIM la destra è automatica), `invaders`, `pacman`, `kong`, `tetris` (su console portatile), `arkanoid`, `bubble`, `pang` (Amiga), `boulder` (Commodore 64), `platform` (NES), `runner` (Mega Drive), `racer` (PlayStation, pseudo-3D). Ogni gioco ha `orig` = scheda «Il gioco originale» (titolo, casa, piattaforma, anno, curiosità) mostrata sopra la console. I nomi sono descrittivi e la grafica è originale: i titoli veri compaiono solo come informazione storica.
+- Verifica: ~3000 enigmi generati senza errori; ogni minigioco vinto a tutti e tre i livelli con un giocatore automatico (simulazione con `__escTest.ARC[k].step`); console provate su PC, telefono verticale e squadre. Nota per le prove: con il pannello di anteprima nascosto `requestAnimationFrame` rallenta, quindi i minigiochi vanno simulati chiamando `step` a mano.
+
+## Da fare
+- (fatto) Stanza sulla storia dei videogiochi con miniprove in stile giochi classici (richiesta del 18/10/2026).
+
 ## Da fare (seconda tappa)
 - Editor semplice delle stanze del docente (domande → codici dei lucchetti, sfondo), con esporta/importa.
 - Altre stanze e avventure.
