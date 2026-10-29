@@ -643,6 +643,7 @@ th{color:var(--muted);font-size:.8rem;text-transform:uppercase}
     <div class="row">
       <div class="field"><span>Tempo</span><div class="seg" id="time"></div></div>
       <div class="field"><span>Indizi</span><div class="seg" id="hints"></div></div>
+      <div class="field"><span>Punti e tempo</span><div class="seg" id="tmul"></div></div>
       <div class="field"><span>Suoni</span><div class="seg" id="sound"></div></div>
     </div>
     <p class="note" id="rules"></p>
@@ -661,6 +662,7 @@ th{color:var(--muted);font-size:.8rem;text-transform:uppercase}
     <p class="note" id="resNote" style="text-align:center"></p>
     <div class="finals" id="finals"></div>
     <div class="actions"><button class="start" id="again">Gioca ancora</button><button class="btn2" id="toSetup">Cambia impostazioni</button></div>
+    <div id="byLvl" class="regbox"></div>
     <div id="regBox"></div>
     <details><summary>Rivedi gli enigmi e le soluzioni</summary><div class="tablewrap"><table id="recap"></table></div></details>
   </div>
@@ -5801,7 +5803,7 @@ ADV.forEach(a => { if(a.lv == null) a.lv = a.id === 'blackout' ? 3 : a.id === 'f
 /* ============================================================
    IMPOSTAZIONI
    ============================================================ */
-const P = {mode:'coop', screen:'touch', layout:'side', path:'adv', adv:'fuga', rooms:['frazioni','cellula'], lvl:1, nEn:3, doors:'varie', scenes:'varie', view:'auto', skill:true, win:'race', time:0, hints:'punti', sound:true, n1:'Squadra blu', n2:'Squadra arancione'};
+const P = {mode:'coop', screen:'touch', layout:'side', path:'adv', adv:'fuga', rooms:['frazioni','cellula'], lvl:1, nEn:3, doors:'varie', scenes:'varie', view:'auto', skill:true, win:'race', time:0, hints:'punti', tmul:true, sound:true, n1:'Squadra blu', n2:'Squadra arancione'};
 try{ const s = JSON.parse(localStorage.getItem('escape-prefs') || '{}'); Object.keys(P).forEach(k => { if(s[k] !== undefined && typeof s[k] === typeof P[k] && Array.isArray(s[k]) === Array.isArray(P[k])) P[k] = s[k]; }); }catch(e){}
 const save = () => { try{ localStorage.setItem('escape-prefs', JSON.stringify(P)); }catch(e){} };
 const roomOk = id => !!ROOMS[id] && id !== 'prova';
@@ -5829,6 +5831,7 @@ function renderSetup(){
   seg('#win', 'win', [['race','Chi esce prima'],['points','Più punti']]);
   seg('#time', 'time', [[0,'Senza limite'],[10,'10 min'],[15,'15 min'],[20,'20 min'],[30,'30 min'],[45,'45 min']]);
   seg('#hints', 'hints', [['punti','Costano punti'],['tempo','Costano tempo'],['gratis','Gratuiti'],['no','Nessun indizio']]);
+  seg('#tmul', 'tmul', [[true,'Più veloci, più punti'],[false,'Il tempo non conta']]);
   seg('#sound', 'sound', [[true,'Sì'],[false,'No']]);
   const duo = P.mode === 'duo', lim = P.screen === 'lim';
   $('#layoutF').classList.toggle('hide', !duo || lim);
@@ -5849,6 +5852,8 @@ function renderSetup(){
     : (lim ? 'Tutta la classe insieme alla LIM: si gioca un tocco alla volta; i giochi a più mani diventano giochi in sequenza.' : 'Tutta la classe insieme: un solo laboratorio su tutto lo schermo; alcuni enigmi richiedono più mani contemporaneamente.'));
   parts.push(`Ogni stanza ha ${P.nEn} enigmi (lucchetti, prove e giochi di squadra o di abilità): ognuno dà un pezzo per aprire la porta. ${P.doors === 'varie' ? 'Le porte cambiano da stanza a stanza: cassaforte, cavi elettrici, stelle, pozioni, parola segreta, serratura da scassinare…' : 'I pezzi sono cifre con un simbolo: nell\'ordine dei simboli aprono la porta.'} Il gioco ricorda gli enigmi già usati e propone prima quelli nuovi.`);
   parts.push({punti:'Gli indizi (fino a 3 per enigma) costano 3 punti ciascuno.', tempo:'Gli indizi (fino a 3 per enigma) bloccano la squadra per 15 secondi.', gratis:'Gli indizi (fino a 3 per enigma) sono gratuiti.', no:'Senza indizi.'}[P.hints]);
+  parts.push('Ogni enigma vale fino a 10 punti: ogni errore costa 2 punti (minimo 2 punti per enigma); la porta vale 5 punti, meno 1 per ogni tentativo sbagliato.');
+  if(P.tmul) parts.push(`Il tempo conta: i punti di un enigma sono pieni se lo risolvete entro ${TMUL0.slice(1).join(' / ')} secondi (livello base / medio / avanzato) da quando lo aprite, più il tempo che serve comunque ai giochi lunghi (viaggio, ritmo, leve, sala giochi…), poi calano del 10% ogni 30 secondi in più (fino a metà).`);
   parts.push('Il docente può saltare un enigma tenendo premuto «Salta» per due secondi. Nessun dato viene inviato.');
   $('#rules').innerHTML = parts.join(' ');
 }
@@ -5987,7 +5992,7 @@ function enterRoom(B, ri){
   if(ri >= G.seq.length){ boardFinish(B); return; }
   const R = ROOMS[G.seq[ri]], E = getGen(ri);
   B.st = E.map((e, i) => ({done:false, ok:false, hints:0, err:0, opened:false, digit:G.digits[ri][i]}));
-  B.doorDone = false;
+  B.doorDone = false; B.doorErr = 0;
   B.el.style.setProperty('--rc', R.col);
   const SC = SCENES[G.scene[ri]] || SCENES.lab;
   B.el.querySelector('.bg').innerHTML = sceneBG(G.scene[ri], R.deco);
@@ -6013,7 +6018,7 @@ function openEnigma(B, i){
   closePanel(B);
   B.el.querySelector('.banner').classList.remove('show'); B.el.querySelector('.coach').classList.add('hide');
   const door = i === 'door', E = getGen(B.ri), d = door ? null : E[i];
-  B.cur = i; if(!door) B.st[i].opened = true;
+  B.cur = i; if(!door){ B.st[i].opened = true; if(B.st[i].tOpen == null) B.st[i].tOpen = gameSec(); }
   const pn = B.el.querySelector('.panel'); pn.classList.remove('hide');
   const D = G.dk[B.ri], K = DOORS[D.kind];
   pn.querySelector('.ptitle').innerHTML = door ? K.n : `${K.badge(D, i)} ${d.title || TYPE_LABEL[d.type]}`;
@@ -6056,21 +6061,45 @@ function lockBoard(B, secs, text){
 }
 function wrong(B, msg, soft){
   const s = typeof B.cur === 'number' && B.cur >= 0 ? B.st[B.cur] : null;
-  if(s) s.err++;
+  if(s) s.err++; else if(B.cur === 'door') B.doorErr = (B.doorErr || 0) + 1;
   beep([220], 0.15); say(B, exFace(B, 'oops') + msg, 'bad');
   if(B.team === 'L' && !soft){ if(s) s.err = 0;   /* la squadra che subentra non paga gli errori dell'altra */
     G.turn = 3 - G.turn; headUpdate(B); say(B, `${exFace(B, 'oops')}${msg} Ora tocca a ${tname(G.turn)}.`, 'bad'); return; }
   if(!soft && !G.tut && P.screen !== 'lim') lockBoard(B, 2, 'Attendi… #');
 }
 function points(s){ return Math.max(2, 10 - 2*s.err - (P.hints === 'punti' ? 3*s.hints : 0)); }
+/* moltiplicatore del tempo: pieno fino a TMUL0[livello] secondi dall'apertura dell'enigma, poi −10% ogni 30 s, minimo ×0,5.
+   Il tempo di gioco esclude le pause (G.t0 si sposta quando si riprende). */
+const TMUL0 = [0, 20, 30, 40];
+const gameSec = () => (Date.now() - G.t0)/1000;
+/* secondi in più per i giochi che durano già da soli (stimati sulla durata minima di ciascun motore, a quel livello) */
+function tmulExtra(e, l){
+  const n = a => (a || []).length, lv = l || 2;
+  switch(e.type){
+    case 'order': return 4*n(e.items);
+    case 'match': return 4*n(e.pairs);
+    case 'find': return 10;
+    case 'roles': return 30;
+    case 'memory': return 6*n(e.pairs);
+    case 'catch': case 'flow': return 15 + 4*(e.items || []).filter(x => x.ok).length;
+    case 'hold': return 15 + (e.secs || 2)*[1, 1, 1.25, 1.5][lv];
+    case 'rhythm': return 10 + 2.6 + (e.need || 8)*60/(e.bpm || 70);
+    case 'sync': return 15 + 2.5*(e.reps || 3);
+    case 'path': return 15 + (1.2 + (n(e.stations) + 1)*8)/[0, .5, .58, .66][lv];   /* il segnalino avanza da solo: lunghezza / velocità */
+    case 'arcade': return 60 + 30*lv;
+    default: return 0;   /* lucchetto, provette, esperimento */
+  }
+}
+function tmul(sec, l, e){ if(!P.tmul || G.tut) return 1; return Math.max(0.5, 1 - 0.1*Math.floor(Math.max(0, sec - TMUL0[l || 2] - (e ? tmulExtra(e, l) : 0))/30)); }
+const fmtT = s => { s = Math.round(s); return s < 60 ? `${s} s` : `${Math.floor(s/60)} min${s % 60 ? ` ${s % 60} s` : ''}`; };
 function addPts(B, p){ const t = teamIdx(B); if(B.team === 'L') G.score[t] += p; else B.score += p; headUpdate(B); }
 function solve(B, i, ok){
   const s = B.st[i]; if(s.done) return;
   s.done = true; s.ok = ok;
-  const E = getGen(B.ri)[i];
-  G.log.push({b:B.k, team:B.team === 'L' ? G.turn : B.team, room:G.seq[B.ri], ri:B.ri, i, e:E, ok, hints:s.hints, err:s.err});
+  const E = getGen(B.ri)[i], l = lvlOf(B.ri), secs = s.tOpen == null ? 0 : gameSec() - s.tOpen, mul = tmul(secs, l, E), p = ok ? Math.max(1, Math.round(points(s)*mul)) : 0;
+  G.log.push({b:B.k, team:B.team === 'L' ? G.turn : B.team, room:G.seq[B.ri], ri:B.ri, i, e:E, ok, hints:s.hints, err:s.err, l, secs, mul, pts:p});
   const D = G.dk[B.ri], K = DOORS[D.kind], tok = K.tok(D, i);
-  if(ok){ const p = points(s); addPts(B, p); beep([660, 880, 1100], 0.09); say(B, `Risolto! Avete trovato: <b>${tok}</b> &nbsp;(+${p} punti)`, 'ok'); }
+  if(ok){ addPts(B, p); beep([660, 880, 1100], 0.09); say(B, `Risolto! Avete trovato: <b>${tok}</b> &nbsp;(+${p} punti${mul < 1 ? ` · tempo ${fmtT(secs)}: ×${N(mul)}` : ''})`, 'ok'); }
   else { say(B, `Enigma saltato. Soluzione: ${E.sol || ''}. Regalo del docente: <b>${tok}</b>`, 'hint'); }
   const ctrl = B.ctrl; if(ctrl) ctrl.abort();
   const body = B.el.querySelector('.pbody'); if(body){ body.insertAdjacentHTML('beforeend', `<div class="reveal${ok ? '' : ' skip'}"><div class="rays"></div><div class="big">${tok}</div><b>${ok ? `Avete trovato ${K.what}!` : 'Regalo del docente'}</b></div>`); if(ok) sparks(body.querySelector('.reveal'), 18); }
@@ -6079,8 +6108,9 @@ function solve(B, i, ok){
 function skipEnigma(B){ if(typeof B.cur === 'number' && B.cur >= 0) solve(B, B.cur, false); }
 function doorOpen(B){
   if(B.doorDone) return; B.doorDone = true;
-  addPts(B, 5); beep([523, 659, 784, 1047], 0.12);
-  say(B, 'Aperta! +5 punti', 'ok');
+  const p = Math.max(1, 5 - (B.doorErr || 0));   /* ogni tentativo sbagliato alla porta costa 1 punto */
+  addPts(B, p); beep([523, 659, 784, 1047], 0.12);
+  say(B, `Aperta! +${p} punti${B.doorErr ? ` (${B.doorErr} tentativ${B.doorErr === 1 ? 'o sbagliato' : 'i sbagliati'})` : ''}`, 'ok');
   /* prima si vede l'animazione della porta (cassaforte che gira, cavi accesi…), poi i battenti che si spalancano */
   clearTimeout(B.to); B.to = setTimeout(() => { closePanel(B); cinema(B, () => enterRoom(B, B.ri + 1)); }, 1400);
 }
@@ -6174,10 +6204,30 @@ function finish(why, winner){
   const items = G.log.map(r => ({t:ROOMS[r.room].topic, l:lvlOf(r.ri), ok:r.ok, q:r.e.q, a:r.e.sol}));
   G.boards.forEach(B => { if(B.finished || !B.st) return; B.st.forEach((s, i) => { if(s.opened && !s.done){ const e = getGen(B.ri)[i]; items.push({t:ROOMS[G.seq[B.ri]].topic, l:lvlOf(B.ri), ok:false, q:e.q, a:e.sol}); } }); });
   const squadre = duo ? fin.map(f => ({nome:tname(f.B.team), punti:f.pts})) : L ? [{nome:P.n1, punti:G.score[0]}, {nome:P.n2, punti:G.score[1]}] : [{nome:'La classe', punti:fin[0].pts}];
-  if(window.REG) REG.report('#regBox', items.length ? REG.save({gioco:'escape', titolo:'Il laboratorio scomparso', modo:`${duo || L ? 'Due squadre' : 'Classe intera'} · ${isLim() ? 'LIM' : 'multitouch'} · ${P.path === 'adv' ? (ADV.find(a => a.id === P.adv) || {}).n : 'percorso su misura'}`, livello:LVN[P.lvl], squadre, items}) : {items:[]});
+  if(window.REG) REG.report('#regBox', items.length ? REG.save({gioco:'escape', titolo:'Il laboratorio scomparso', modo:`${duo || L ? 'Due squadre' : 'Classe intera'} · ${isLim() ? 'LIM' : 'multitouch'} · ${P.path === 'adv' ? (ADV.find(a => a.id === P.adv) || {}).n : 'percorso su misura'}`, livello:LVN[P.lvl], tmul:P.tmul, squadre, items}) : {items:[]});
+  lvlReport(duo || L);
   beep([523, 659, 784, 1047], 0.13);
   show('end');
   try{ if(document.fullscreenElement) document.exitFullscreen().catch(() => {}); }catch(e){}
+}
+
+/* risultati separati per difficoltà: questa partita (enigmi risolti, punti, tempo medio) e record delle classi per livello */
+function lvlReport(teams){
+  const host = $('#byLvl'), rows = [];
+  [1, 2, 3].forEach(l => (teams ? [1, 2] : [null]).forEach(tm => {
+    const L = G.log.filter(r => r.l === l && (tm == null || r.team === tm)); if(!L.length) return;
+    const ok = L.filter(r => r.ok);
+    rows.push(`<tr><td>${LVN[l]}</td>${teams ? `<td><span style="color:var(--t${tm})">●</span> ${tname(tm)}</td>` : ''}<td>${ok.length} su ${L.length}</td><td><b>${ok.reduce((a, r) => a + r.pts, 0)}</b></td><td>${ok.length ? fmtT(ok.reduce((a, r) => a + r.secs, 0)/ok.length) : '–'}</td></tr>`); }));
+  let h = rows.length ? `<div class="rcard"><h4>Questa partita, per difficoltà</h4><table class="rrank"><tr><th>Livello</th>${teams ? '<th>Squadra</th>' : ''}<th>Enigmi risolti</th><th>Punti degli enigmi</th><th>Tempo medio</th></tr>${rows.join('')}</table>${P.tmul ? '' : '<p class="rnote">Il tempo non cambiava i punti.</p>'}</div>` : '';
+  /* record (punti migliori) di ogni classe nell'anno scolastico, separati per livello; solo partite con la stessa regola del tempo */
+  const all = window.REG ? REG.load().partite.filter(p => p.gioco === 'escape' && p.anno === REG.anno() && !!p.tmul === P.tmul && p.classe) : [];
+  if(all.length){
+    const cols = LVN.slice(1).concat(LVN[0]), m = new Map();
+    all.forEach(p => { const o = m.get(p.classe) || {}; const best = Math.max(0, ...(p.squadre || []).map(s => s.punti)); o[p.livello] = Math.max(o[p.livello] || 0, best); m.set(p.classe, o); });
+    const cl = [...m.keys()].sort(), mine = window.REG ? REG.classe() : '';
+    h += `<div class="rcard"><h4>Record delle classi per difficoltà · a.s. ${REG.anno()}</h4><table class="rrank"><tr><th>Classe</th>${cols.map(c => `<th>${c}</th>`).join('')}</tr>${cl.map(c => `<tr class="${c === mine ? 'me' : ''}"><td>${esc(c)}</td>${cols.map(k => `<td>${m.get(c)[k] != null ? m.get(c)[k] : '–'}</td>`).join('')}</tr>`).join('')}</table><p class="rnote">${P.tmul ? 'Partite con il tempo che conta.' : 'Partite in cui il tempo non contava.'} «Crescente» = livelli misti.</p></div>`;
+  }
+  host.innerHTML = h ? `<h3>Risultati per difficoltà</h3><div class="rgrid">${h}</div>` : '';
 }
 
 /* ============================================================
@@ -8210,7 +8260,7 @@ $('#again').onclick = () => start(false);
 $('#toSetup').onclick = () => { renderSetup(); show('setup'); };
 document.addEventListener('contextmenu', e => { if($('#play').classList.contains('on')) e.preventDefault(); });
 renderSetup();
-window.__escTest = {P, G, ROOMS, PZ, ADV, getGen, solve, start, opts4, nopts, DOORS, SCENES, sceneBG, openEnigma, doorOpen, renderScene, WORLDS, CAST, chrSVG, exUse, x3Tap, loadThree, ARC, VG, retune};   // solo per le verifiche automatiche
+window.__escTest = {P, G, ROOMS, PZ, ADV, getGen, solve, start, opts4, nopts, DOORS, SCENES, sceneBG, openEnigma, doorOpen, renderScene, WORLDS, CAST, chrSVG, exUse, x3Tap, loadThree, ARC, VG, retune, wrong, finish, tmul, tmulExtra};   // solo per le verifiche automatiche
 })();
 </script>
 </body>
